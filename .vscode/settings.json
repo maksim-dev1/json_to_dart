@@ -1,0 +1,14 @@
+{
+  "docwriter.style": "Google",
+  "docwriter.language": "Russian",
+  "files.exclude": {
+    "**/*.freezed.dart": true,
+    "**/*.g.dart": true,
+    "**/*.realm.dart": true
+  },
+  "commentTranslate.targetLanguage": "ru",
+  "commentTranslate.hover.enabled": true,
+  "commentTranslate.source": "Google",
+  "debug.toolBarLocation": "commandCenter",
+  "cmake.ignoreCMakeListsMissing": true
+}

@@ -1,0 +1,15 @@
+// {
+//     "configurations": [
+//     {
+//             "name": "lk_shop (web dev debug mode)",
+//             "request": "launch",
+//             "type": "dart",
+            
+//             "toolArgs": [
+//                 "--dart-define-from-file",
+//                 "--web-browser-flag",
+//                 "--disable-web-security",
+//             ]
+//         },
+//     ]
+// }
