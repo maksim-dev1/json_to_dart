@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:json_to_dart/features/home/presentation/view/components/custom_json_editor.dart';
 import 'package:json_to_dart/features/home/presentation/view/components/custom_text_field.dart';
 import 'package:json_to_dart/features/home/presentation/view/components/git_button.dart';
 import 'package:json_to_dart/features/home/presentation/view/components/resizable_panels.dart';
@@ -123,6 +124,30 @@ class LeftPanelChild extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ),
+        Expanded(
+          child: CodeEditor(
+            initialText: '''
+        {
+          "name": "Alice",
+          "age": 25,
+          "isStudent": true,
+          "address": {
+            "street": "123 Main St",
+            "city": "Example City"
+          },
+          "languages": ["Dart", "JavaScript"]
+        }''',
+            fontSize: 14,
+            backgroundColor: const Color(0xFF1E1E1E),
+            gutterBackgroundColor: const Color(0xFF121212),
+            gutterTextColor: Colors.grey,
+            cursorColor: Colors.blue,
+            onChanged: (String value) {
+              // Handle JSON changes here
+              print('JSON changed: $value');
+            },
           ),
         ),
       ],
