@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
 
 class JsonSyntaxHighlightController extends TextEditingController {
   JsonSyntaxHighlightController({String text = '{}'}) : super(text: text);
@@ -231,43 +230,7 @@ class CodeEditorState extends State<CodeEditor> {
   void _onTextChanged() {
     final text = _controller.text;
     widget.onChanged?.call(text);
-
-    // Проверяем JSON только если текст не пустой и не состоит только из пробелов
-    if (text.trim().isNotEmpty) {
-      try {
-        // Пытаемся распарсить JSON
-        jsonDecode(text);
-        setState(() {
-          _errorMessage = ''; // Очищаем ошибку если JSON валидный
-        });
-      } catch (e) {
-        // Если произошла ошибка парсинга, отправляем сообщение об ошибке
-        final error = _getJsonErrorMessage(e.toString());
-        setState(() {
-          _errorMessage = error;
-        });
-      }
-    } else {
-      setState(() {
-        _errorMessage = '';
-      });
-    }
-  }
-
-  String _getJsonErrorMessage(String originalError) {
-    // Преобразуем системное сообщение об ошибке в более понятное пользователю
-    if (originalError.contains('Unexpected character')) {
-      return 'Некорректный символ в JSON';
-    } else if (originalError.contains('Expected')) {
-      return 'Ошибка в структуре JSON';
-    } else if (originalError.contains('Unterminated string')) {
-      return 'Незакрытая строка: пропущены кавычки';
-    } else if (originalError.contains('Missing closing')) {
-      return 'Пропущена закрывающая скобка';
-    } else if (originalError.contains('Extra data')) {
-      return 'Лишние данные после завершения JSON';
-    }
-    return 'Некорректный JSON';
+    setState(() => _errorMessage = '');
   }
 
   @override

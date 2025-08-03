@@ -20,7 +20,7 @@ class CustomInputField extends StatelessWidget {
     this.controller,
     this.onChanged,
     this.hintText,
-    this.titleTextStyle = true,
+    this.titleTextStyle = false,
     this.enabled = true,
   });
 
@@ -50,7 +50,10 @@ class CustomInputField extends StatelessWidget {
         decoration: BoxDecoration(
           color: backgroundColor,
           border: border
-              ? Border.all(color: Colors.grey.shade400)
+              ? Border.all(
+                  color: Color.fromARGB(255, 108, 108, 108),
+                  width: 0.2,
+                )
               : Border.all(color: Colors.transparent),
           borderRadius: BorderRadius.circular(8),
         ),

@@ -5,12 +5,14 @@ class Panel extends StatelessWidget {
   final Widget child;
   final Color backgroundColor;
   final double minWidth;
+  final double defaultWidth;
 
   const Panel({
     super.key,
     required this.child,
     this.backgroundColor = Colors.white,
     this.minWidth = 100.0,
+    this.defaultWidth = 200.0,
   });
 
   @override
@@ -73,8 +75,19 @@ class _ResizablePanelsState extends State<ResizablePanels> {
 
         // Инициализация ширин при первом запуске или при изменении числа панелей
         if (widths == null || widths!.length != count) {
-          final each = totalWidth / count;
-          widths = List<double>.filled(count, each);
+          // Сначала устанавливаем дефолтные ширины из параметров панелей
+          widths = widget.panels.map((p) => p.defaultWidth).toList();
+
+          // Вычисляем общую ширину всех панелей
+          final totalDefaultWidth = widths!.reduce((a, b) => a + b);
+
+          // Корректируем ширины пропорционально, если они не помещаются
+          if (totalDefaultWidth != totalWidth) {
+            final scale = totalWidth / totalDefaultWidth;
+            for (var i = 0; i < count; i++) {
+              widths![i] = widths![i] * scale;
+            }
+          }
         }
 
         // Собираем children для Row
