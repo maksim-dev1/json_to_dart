@@ -11,6 +11,7 @@ part of 'table_entity.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
+
 /// @nodoc
 mixin _$TablesEntity {
 
@@ -21,6 +22,8 @@ mixin _$TablesEntity {
 @pragma('vm:prefer-inline')
 $TablesEntityCopyWith<TablesEntity> get copyWith => _$TablesEntityCopyWithImpl<TablesEntity>(this as TablesEntity, _$identity);
 
+  /// Serializes this TablesEntity to a JSON map.
+  Map<String, dynamic> toJson();
 
 
 @override
@@ -28,7 +31,7 @@ bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is TablesEntity&&const DeepCollectionEquality().equals(other.tables, tables));
 }
 
-
+@JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(tables));
 
@@ -197,11 +200,11 @@ return $default(_that.tables);case _:
 }
 
 /// @nodoc
-
+@JsonSerializable()
 
 class _TablesEntity implements TablesEntity {
   const _TablesEntity({required final  List<TableEntity> tables}): _tables = tables;
-  
+  factory _TablesEntity.fromJson(Map<String, dynamic> json) => _$TablesEntityFromJson(json);
 
  final  List<TableEntity> _tables;
 @override List<TableEntity> get tables {
@@ -217,14 +220,17 @@ class _TablesEntity implements TablesEntity {
 @pragma('vm:prefer-inline')
 _$TablesEntityCopyWith<_TablesEntity> get copyWith => __$TablesEntityCopyWithImpl<_TablesEntity>(this, _$identity);
 
-
+@override
+Map<String, dynamic> toJson() {
+  return _$TablesEntityToJson(this, );
+}
 
 @override
 bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is _TablesEntity&&const DeepCollectionEquality().equals(other._tables, _tables));
 }
 
-
+@JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_tables));
 
@@ -268,6 +274,7 @@ as List<TableEntity>,
 
 }
 
+
 /// @nodoc
 mixin _$TableEntity {
 
@@ -278,6 +285,8 @@ mixin _$TableEntity {
 @pragma('vm:prefer-inline')
 $TableEntityCopyWith<TableEntity> get copyWith => _$TableEntityCopyWithImpl<TableEntity>(this as TableEntity, _$identity);
 
+  /// Serializes this TableEntity to a JSON map.
+  Map<String, dynamic> toJson();
 
 
 @override
@@ -285,7 +294,7 @@ bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is TableEntity&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other.fields, fields));
 }
 
-
+@JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode => Object.hash(runtimeType,name,const DeepCollectionEquality().hash(fields));
 
@@ -455,11 +464,11 @@ return $default(_that.name,_that.fields);case _:
 }
 
 /// @nodoc
-
+@JsonSerializable()
 
 class _TableEntity implements TableEntity {
   const _TableEntity({required this.name, required final  List<FieldEntity> fields}): _fields = fields;
-  
+  factory _TableEntity.fromJson(Map<String, dynamic> json) => _$TableEntityFromJson(json);
 
 @override final  String name;
  final  List<FieldEntity> _fields;
@@ -476,14 +485,17 @@ class _TableEntity implements TableEntity {
 @pragma('vm:prefer-inline')
 _$TableEntityCopyWith<_TableEntity> get copyWith => __$TableEntityCopyWithImpl<_TableEntity>(this, _$identity);
 
-
+@override
+Map<String, dynamic> toJson() {
+  return _$TableEntityToJson(this, );
+}
 
 @override
 bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is _TableEntity&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._fields, _fields));
 }
 
-
+@JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode => Object.hash(runtimeType,name,const DeepCollectionEquality().hash(_fields));
 
@@ -528,6 +540,7 @@ as List<FieldEntity>,
 
 }
 
+
 /// @nodoc
 mixin _$FieldEntity {
 
@@ -538,6 +551,8 @@ mixin _$FieldEntity {
 @pragma('vm:prefer-inline')
 $FieldEntityCopyWith<FieldEntity> get copyWith => _$FieldEntityCopyWithImpl<FieldEntity>(this as FieldEntity, _$identity);
 
+  /// Serializes this FieldEntity to a JSON map.
+  Map<String, dynamic> toJson();
 
 
 @override
@@ -545,7 +560,7 @@ bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is FieldEntity&&(identical(other.jsonTitle, jsonTitle) || other.jsonTitle == jsonTitle)&&(identical(other.title, title) || other.title == title)&&(identical(other.type, type) || other.type == type)&&(identical(other.isNullable, isNullable) || other.isNullable == isNullable));
 }
 
-
+@JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode => Object.hash(runtimeType,jsonTitle,title,type,isNullable);
 
@@ -717,11 +732,11 @@ return $default(_that.jsonTitle,_that.title,_that.type,_that.isNullable);case _:
 }
 
 /// @nodoc
-
+@JsonSerializable()
 
 class _FieldEntity implements FieldEntity {
   const _FieldEntity({required this.jsonTitle, required this.title, required this.type, required this.isNullable});
-  
+  factory _FieldEntity.fromJson(Map<String, dynamic> json) => _$FieldEntityFromJson(json);
 
 @override final  String jsonTitle;
 @override final  String title;
@@ -734,14 +749,17 @@ class _FieldEntity implements FieldEntity {
 @pragma('vm:prefer-inline')
 _$FieldEntityCopyWith<_FieldEntity> get copyWith => __$FieldEntityCopyWithImpl<_FieldEntity>(this, _$identity);
 
-
+@override
+Map<String, dynamic> toJson() {
+  return _$FieldEntityToJson(this, );
+}
 
 @override
 bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is _FieldEntity&&(identical(other.jsonTitle, jsonTitle) || other.jsonTitle == jsonTitle)&&(identical(other.title, title) || other.title == title)&&(identical(other.type, type) || other.type == type)&&(identical(other.isNullable, isNullable) || other.isNullable == isNullable));
 }
 
-
+@JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode => Object.hash(runtimeType,jsonTitle,title,type,isNullable);
 

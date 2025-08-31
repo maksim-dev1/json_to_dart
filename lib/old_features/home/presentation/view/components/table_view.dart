@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:json_to_dart/features/home/domain/entities/table_entity.dart';
-import 'package:json_to_dart/features/home/presentation/view/components/custom_text_field.dart';
+import 'package:json_to_dart/old_features/home/domain/entities/table_entity.dart';
+import 'package:json_to_dart/old_features/home/presentation/view/components/custom_text_field.dart';
 import 'package:json_to_dart/shared/components/app_box.dart';
 
 const dartTypes = [

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:json_to_dart/features/home/domain/entities/table_entity.dart';
+import 'package:json_to_dart/old_features/home/domain/entities/table_entity.dart';
 
 class JsonParser {
   TablesEntity parseJson(String jsonString) {
@@ -12,8 +12,8 @@ class JsonParser {
       final dynamic jsonMap = json.decode(jsonString);
 
       final rootTable = switch (jsonMap) {
-        Map<String, dynamic> map => _parseObject('Root', map),
-        List list => _parseArray('Root', list),
+        final Map<String, dynamic> map => _parseObject('Root', map),
+        final List<dynamic> list => _parseArray('Root', list),
         _ => throw const FormatException(
           'Invalid JSON format: Expected object or array',
         ),
@@ -120,7 +120,7 @@ class JsonParser {
     int() => 'int',
     double() => 'double',
     bool() => 'bool',
-    List list =>
+    final List<dynamic> list =>
       list.isEmpty ? 'List<dynamic>' : 'List<${_getFieldType(list.first)}>',
     Map() => _formatClassName(value.toString()),
     _ => 'dynamic',

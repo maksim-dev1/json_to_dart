@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:json_to_dart/features/home/domain/entities/table_entity.dart';
-import 'package:json_to_dart/features/home/domain/json_parser.dart';
+import 'package:json_to_dart/old_features/home/domain/entities/table_entity.dart';
+import 'package:json_to_dart/old_features/home/domain/json_parser.dart';
 
 part 'json_event.dart';
 part 'json_state.dart';

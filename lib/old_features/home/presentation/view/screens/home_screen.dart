@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:json_to_dart/features/home/presentation/bloc/json_bloc.dart';
-import 'package:json_to_dart/features/home/presentation/view/components/custom_json_editor.dart';
-import 'package:json_to_dart/features/home/presentation/view/components/custom_text_field.dart';
-import 'package:json_to_dart/features/home/presentation/view/components/git_button.dart';
-import 'package:json_to_dart/features/home/presentation/view/components/panels/center_panel_child.dart';
-import 'package:json_to_dart/features/home/presentation/view/components/panels/left_panel_child.dart';
-import 'package:json_to_dart/features/home/presentation/view/components/resizable_panels.dart';
-import 'package:json_to_dart/features/home/presentation/view/components/table_view.dart';
+import 'package:json_to_dart/old_features/home/presentation/bloc/json_bloc.dart';
+import 'package:json_to_dart/old_features/home/presentation/view/components/custom_json_editor.dart';
+import 'package:json_to_dart/old_features/home/presentation/view/components/custom_text_field.dart';
+import 'package:json_to_dart/old_features/home/presentation/view/components/git_button.dart';
+import 'package:json_to_dart/old_features/home/presentation/view/components/panels/center_panel_child.dart';
+import 'package:json_to_dart/old_features/home/presentation/view/components/panels/left_panel_child.dart';
+import 'package:json_to_dart/old_features/home/presentation/view/components/resizable_panels.dart';
+import 'package:json_to_dart/old_features/home/presentation/view/components/table_view.dart';
 import 'package:json_to_dart/shared/components/app_box.dart';
 
 class HomeScreen extends StatefulWidget {
