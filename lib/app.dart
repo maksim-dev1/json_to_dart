@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:json_to_dart/futures/tables_panel/presentation/bloc/table_panel_bloc.dart';
+import 'package:json_to_dart/shared/bloc/json_to_dart_bloc.dart';
 import 'package:json_to_dart/home_screen.dart';
 import 'package:json_to_dart/theme/app_theme.dart';
 import 'package:talker_flutter/talker_flutter.dart';
@@ -14,7 +14,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       theme: appTheme,
       navigatorObservers: [TalkerRouteObserver(talker)],
-      home: BlocProvider(create: (context) => TablePanelBloc(), child: const HomeScreen()),
+      home: BlocProvider(create: (context) => JsonToDartBloc(), child: const HomeScreen()),
     );
   }
 }

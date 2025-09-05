@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:json_to_dart/old_features/home/presentation/bloc/json_bloc.dart';
 import 'package:json_to_dart/old_features/home/presentation/view/components/custom_json_editor.dart';
-import 'package:json_to_dart/old_features/home/presentation/view/components/custom_text_field.dart';
+import 'package:json_to_dart/futures/tables_panel/presentation/components/custom_text_field.dart';
 
 class LeftPanelChild extends StatelessWidget {
   const LeftPanelChild({super.key});

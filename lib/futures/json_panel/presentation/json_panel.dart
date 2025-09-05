@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:json_to_dart/futures/tables_panel/presentation/bloc/table_panel_bloc.dart';
+import 'package:json_to_dart/shared/bloc/json_to_dart_bloc.dart';
 import 'package:json_to_dart/theme/app_theme.dart';
 import 'package:re_editor/re_editor.dart';
 import 'package:re_highlight/languages/json.dart';
@@ -73,7 +73,7 @@ class _JsonPanelState extends State<JsonPanel> {
         child: DecoratedBox(decoration: BoxDecoration(color: Color.fromARGB(255, 30, 144, 255))),
       ),
       onChanged: (value) {
-        context.read<TablePanelBloc>().add(TablePanelEvent.started(json: value ));
+        context.read<JsonToDartBloc>().add(JsonToDartEvent.started(json: value));
       },
     );
   }
