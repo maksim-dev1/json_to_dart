@@ -17,14 +17,6 @@ class JsonPanel extends StatefulWidget {
 class _JsonPanelState extends State<JsonPanel> {
   final CodeLineEditingController _controller = CodeLineEditingController();
 
-  // @override
-  // void initState() {
-  //   rootBundle.loadString('assets/code.json').then((value) {
-  //     _controller.text = value;
-  //   });
-  //   super.initState();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return CodeEditor(
@@ -37,6 +29,7 @@ class _JsonPanelState extends State<JsonPanel> {
           theme: codeEditorStyle,
         ),
       ),
+      
       controller: _controller,
       wordWrap: false,
       indicatorBuilder: (context, editingController, chunkController, notifier) {

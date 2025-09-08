@@ -14,61 +14,30 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$JsonToDartEvent {
 
- CodeLineEditingValue get json;
-/// Create a copy of JsonToDartEvent
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$JsonToDartEventCopyWith<JsonToDartEvent> get copyWith => _$JsonToDartEventCopyWithImpl<JsonToDartEvent>(this as JsonToDartEvent, _$identity);
+
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is JsonToDartEvent&&(identical(other.json, json) || other.json == json));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is JsonToDartEvent);
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,json);
+int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'JsonToDartEvent(json: $json)';
+  return 'JsonToDartEvent()';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $JsonToDartEventCopyWith<$Res>  {
-  factory $JsonToDartEventCopyWith(JsonToDartEvent value, $Res Function(JsonToDartEvent) _then) = _$JsonToDartEventCopyWithImpl;
-@useResult
-$Res call({
- CodeLineEditingValue json
-});
-
-
-
-
-}
-/// @nodoc
-class _$JsonToDartEventCopyWithImpl<$Res>
-    implements $JsonToDartEventCopyWith<$Res> {
-  _$JsonToDartEventCopyWithImpl(this._self, this._then);
-
-  final JsonToDartEvent _self;
-  final $Res Function(JsonToDartEvent) _then;
-
-/// Create a copy of JsonToDartEvent
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? json = null,}) {
-  return _then(_self.copyWith(
-json: null == json ? _self.json : json // ignore: cast_nullable_to_non_nullable
-as CodeLineEditingValue,
-  ));
-}
-
+class $JsonToDartEventCopyWith<$Res>  {
+$JsonToDartEventCopyWith(JsonToDartEvent _, $Res Function(JsonToDartEvent) __);
 }
 
 
@@ -86,11 +55,19 @@ extension JsonToDartEventPatterns on JsonToDartEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Started value)?  started,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Started value)?  started,TResult Function( _UpdateNullable value)?  updateNullable,TResult Function( _AddTable value)?  addTable,TResult Function( _AddField value)?  addField,TResult Function( _RemoveField value)?  removeField,TResult Function( _UpdateTableTitle value)?  updateTableTitle,TResult Function( _UpdateField value)?  updateField,TResult Function( _DeleteTable value)?  deleteTable,TResult Function( _ReorderField value)?  reorderField,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Started() when started != null:
-return started(_that);case _:
+return started(_that);case _UpdateNullable() when updateNullable != null:
+return updateNullable(_that);case _AddTable() when addTable != null:
+return addTable(_that);case _AddField() when addField != null:
+return addField(_that);case _RemoveField() when removeField != null:
+return removeField(_that);case _UpdateTableTitle() when updateTableTitle != null:
+return updateTableTitle(_that);case _UpdateField() when updateField != null:
+return updateField(_that);case _DeleteTable() when deleteTable != null:
+return deleteTable(_that);case _ReorderField() when reorderField != null:
+return reorderField(_that);case _:
   return orElse();
 
 }
@@ -108,11 +85,19 @@ return started(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Started value)  started,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Started value)  started,required TResult Function( _UpdateNullable value)  updateNullable,required TResult Function( _AddTable value)  addTable,required TResult Function( _AddField value)  addField,required TResult Function( _RemoveField value)  removeField,required TResult Function( _UpdateTableTitle value)  updateTableTitle,required TResult Function( _UpdateField value)  updateField,required TResult Function( _DeleteTable value)  deleteTable,required TResult Function( _ReorderField value)  reorderField,}){
 final _that = this;
 switch (_that) {
 case _Started():
-return started(_that);}
+return started(_that);case _UpdateNullable():
+return updateNullable(_that);case _AddTable():
+return addTable(_that);case _AddField():
+return addField(_that);case _RemoveField():
+return removeField(_that);case _UpdateTableTitle():
+return updateTableTitle(_that);case _UpdateField():
+return updateField(_that);case _DeleteTable():
+return deleteTable(_that);case _ReorderField():
+return reorderField(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -126,11 +111,19 @@ return started(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Started value)?  started,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Started value)?  started,TResult? Function( _UpdateNullable value)?  updateNullable,TResult? Function( _AddTable value)?  addTable,TResult? Function( _AddField value)?  addField,TResult? Function( _RemoveField value)?  removeField,TResult? Function( _UpdateTableTitle value)?  updateTableTitle,TResult? Function( _UpdateField value)?  updateField,TResult? Function( _DeleteTable value)?  deleteTable,TResult? Function( _ReorderField value)?  reorderField,}){
 final _that = this;
 switch (_that) {
 case _Started() when started != null:
-return started(_that);case _:
+return started(_that);case _UpdateNullable() when updateNullable != null:
+return updateNullable(_that);case _AddTable() when addTable != null:
+return addTable(_that);case _AddField() when addField != null:
+return addField(_that);case _RemoveField() when removeField != null:
+return removeField(_that);case _UpdateTableTitle() when updateTableTitle != null:
+return updateTableTitle(_that);case _UpdateField() when updateField != null:
+return updateField(_that);case _DeleteTable() when deleteTable != null:
+return deleteTable(_that);case _ReorderField() when reorderField != null:
+return reorderField(_that);case _:
   return null;
 
 }
@@ -147,10 +140,18 @@ return started(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( CodeLineEditingValue json)?  started,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( CodeLineEditingValue json)?  started,TResult Function( bool nullable,  int tableIndex,  int fieldIndex)?  updateNullable,TResult Function()?  addTable,TResult Function( int tableIndex)?  addField,TResult Function( int tableIndex,  int fieldIndex)?  removeField,TResult Function( String title,  int tableIndex)?  updateTableTitle,TResult Function( int tableIndex,  int fieldIndex,  String? title,  String? jsonTitle,  String? type)?  updateField,TResult Function( int tableIndex)?  deleteTable,TResult Function( int tableIndex,  int oldIndex,  int newIndex)?  reorderField,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Started() when started != null:
-return started(_that.json);case _:
+return started(_that.json);case _UpdateNullable() when updateNullable != null:
+return updateNullable(_that.nullable,_that.tableIndex,_that.fieldIndex);case _AddTable() when addTable != null:
+return addTable();case _AddField() when addField != null:
+return addField(_that.tableIndex);case _RemoveField() when removeField != null:
+return removeField(_that.tableIndex,_that.fieldIndex);case _UpdateTableTitle() when updateTableTitle != null:
+return updateTableTitle(_that.title,_that.tableIndex);case _UpdateField() when updateField != null:
+return updateField(_that.tableIndex,_that.fieldIndex,_that.title,_that.jsonTitle,_that.type);case _DeleteTable() when deleteTable != null:
+return deleteTable(_that.tableIndex);case _ReorderField() when reorderField != null:
+return reorderField(_that.tableIndex,_that.oldIndex,_that.newIndex);case _:
   return orElse();
 
 }
@@ -168,10 +169,18 @@ return started(_that.json);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( CodeLineEditingValue json)  started,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( CodeLineEditingValue json)  started,required TResult Function( bool nullable,  int tableIndex,  int fieldIndex)  updateNullable,required TResult Function()  addTable,required TResult Function( int tableIndex)  addField,required TResult Function( int tableIndex,  int fieldIndex)  removeField,required TResult Function( String title,  int tableIndex)  updateTableTitle,required TResult Function( int tableIndex,  int fieldIndex,  String? title,  String? jsonTitle,  String? type)  updateField,required TResult Function( int tableIndex)  deleteTable,required TResult Function( int tableIndex,  int oldIndex,  int newIndex)  reorderField,}) {final _that = this;
 switch (_that) {
 case _Started():
-return started(_that.json);}
+return started(_that.json);case _UpdateNullable():
+return updateNullable(_that.nullable,_that.tableIndex,_that.fieldIndex);case _AddTable():
+return addTable();case _AddField():
+return addField(_that.tableIndex);case _RemoveField():
+return removeField(_that.tableIndex,_that.fieldIndex);case _UpdateTableTitle():
+return updateTableTitle(_that.title,_that.tableIndex);case _UpdateField():
+return updateField(_that.tableIndex,_that.fieldIndex,_that.title,_that.jsonTitle,_that.type);case _DeleteTable():
+return deleteTable(_that.tableIndex);case _ReorderField():
+return reorderField(_that.tableIndex,_that.oldIndex,_that.newIndex);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -185,10 +194,18 @@ return started(_that.json);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( CodeLineEditingValue json)?  started,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( CodeLineEditingValue json)?  started,TResult? Function( bool nullable,  int tableIndex,  int fieldIndex)?  updateNullable,TResult? Function()?  addTable,TResult? Function( int tableIndex)?  addField,TResult? Function( int tableIndex,  int fieldIndex)?  removeField,TResult? Function( String title,  int tableIndex)?  updateTableTitle,TResult? Function( int tableIndex,  int fieldIndex,  String? title,  String? jsonTitle,  String? type)?  updateField,TResult? Function( int tableIndex)?  deleteTable,TResult? Function( int tableIndex,  int oldIndex,  int newIndex)?  reorderField,}) {final _that = this;
 switch (_that) {
 case _Started() when started != null:
-return started(_that.json);case _:
+return started(_that.json);case _UpdateNullable() when updateNullable != null:
+return updateNullable(_that.nullable,_that.tableIndex,_that.fieldIndex);case _AddTable() when addTable != null:
+return addTable();case _AddField() when addField != null:
+return addField(_that.tableIndex);case _RemoveField() when removeField != null:
+return removeField(_that.tableIndex,_that.fieldIndex);case _UpdateTableTitle() when updateTableTitle != null:
+return updateTableTitle(_that.title,_that.tableIndex);case _UpdateField() when updateField != null:
+return updateField(_that.tableIndex,_that.fieldIndex,_that.title,_that.jsonTitle,_that.type);case _DeleteTable() when deleteTable != null:
+return deleteTable(_that.tableIndex);case _ReorderField() when reorderField != null:
+return reorderField(_that.tableIndex,_that.oldIndex,_that.newIndex);case _:
   return null;
 
 }
@@ -203,11 +220,11 @@ class _Started implements JsonToDartEvent {
   const _Started({required this.json});
   
 
-@override final  CodeLineEditingValue json;
+ final  CodeLineEditingValue json;
 
 /// Create a copy of JsonToDartEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
+@JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 _$StartedCopyWith<_Started> get copyWith => __$StartedCopyWithImpl<_Started>(this, _$identity);
 
@@ -233,7 +250,7 @@ String toString() {
 /// @nodoc
 abstract mixin class _$StartedCopyWith<$Res> implements $JsonToDartEventCopyWith<$Res> {
   factory _$StartedCopyWith(_Started value, $Res Function(_Started) _then) = __$StartedCopyWithImpl;
-@override @useResult
+@useResult
 $Res call({
  CodeLineEditingValue json
 });
@@ -252,10 +269,524 @@ class __$StartedCopyWithImpl<$Res>
 
 /// Create a copy of JsonToDartEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? json = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? json = null,}) {
   return _then(_Started(
 json: null == json ? _self.json : json // ignore: cast_nullable_to_non_nullable
 as CodeLineEditingValue,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _UpdateNullable implements JsonToDartEvent {
+  const _UpdateNullable({required this.nullable, required this.tableIndex, required this.fieldIndex});
+  
+
+ final  bool nullable;
+ final  int tableIndex;
+ final  int fieldIndex;
+
+/// Create a copy of JsonToDartEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$UpdateNullableCopyWith<_UpdateNullable> get copyWith => __$UpdateNullableCopyWithImpl<_UpdateNullable>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UpdateNullable&&(identical(other.nullable, nullable) || other.nullable == nullable)&&(identical(other.tableIndex, tableIndex) || other.tableIndex == tableIndex)&&(identical(other.fieldIndex, fieldIndex) || other.fieldIndex == fieldIndex));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,nullable,tableIndex,fieldIndex);
+
+@override
+String toString() {
+  return 'JsonToDartEvent.updateNullable(nullable: $nullable, tableIndex: $tableIndex, fieldIndex: $fieldIndex)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$UpdateNullableCopyWith<$Res> implements $JsonToDartEventCopyWith<$Res> {
+  factory _$UpdateNullableCopyWith(_UpdateNullable value, $Res Function(_UpdateNullable) _then) = __$UpdateNullableCopyWithImpl;
+@useResult
+$Res call({
+ bool nullable, int tableIndex, int fieldIndex
+});
+
+
+
+
+}
+/// @nodoc
+class __$UpdateNullableCopyWithImpl<$Res>
+    implements _$UpdateNullableCopyWith<$Res> {
+  __$UpdateNullableCopyWithImpl(this._self, this._then);
+
+  final _UpdateNullable _self;
+  final $Res Function(_UpdateNullable) _then;
+
+/// Create a copy of JsonToDartEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? nullable = null,Object? tableIndex = null,Object? fieldIndex = null,}) {
+  return _then(_UpdateNullable(
+nullable: null == nullable ? _self.nullable : nullable // ignore: cast_nullable_to_non_nullable
+as bool,tableIndex: null == tableIndex ? _self.tableIndex : tableIndex // ignore: cast_nullable_to_non_nullable
+as int,fieldIndex: null == fieldIndex ? _self.fieldIndex : fieldIndex // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _AddTable implements JsonToDartEvent {
+  const _AddTable();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddTable);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'JsonToDartEvent.addTable()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _AddField implements JsonToDartEvent {
+  const _AddField({required this.tableIndex});
+  
+
+ final  int tableIndex;
+
+/// Create a copy of JsonToDartEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AddFieldCopyWith<_AddField> get copyWith => __$AddFieldCopyWithImpl<_AddField>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddField&&(identical(other.tableIndex, tableIndex) || other.tableIndex == tableIndex));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,tableIndex);
+
+@override
+String toString() {
+  return 'JsonToDartEvent.addField(tableIndex: $tableIndex)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$AddFieldCopyWith<$Res> implements $JsonToDartEventCopyWith<$Res> {
+  factory _$AddFieldCopyWith(_AddField value, $Res Function(_AddField) _then) = __$AddFieldCopyWithImpl;
+@useResult
+$Res call({
+ int tableIndex
+});
+
+
+
+
+}
+/// @nodoc
+class __$AddFieldCopyWithImpl<$Res>
+    implements _$AddFieldCopyWith<$Res> {
+  __$AddFieldCopyWithImpl(this._self, this._then);
+
+  final _AddField _self;
+  final $Res Function(_AddField) _then;
+
+/// Create a copy of JsonToDartEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? tableIndex = null,}) {
+  return _then(_AddField(
+tableIndex: null == tableIndex ? _self.tableIndex : tableIndex // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _RemoveField implements JsonToDartEvent {
+  const _RemoveField({required this.tableIndex, required this.fieldIndex});
+  
+
+ final  int tableIndex;
+ final  int fieldIndex;
+
+/// Create a copy of JsonToDartEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RemoveFieldCopyWith<_RemoveField> get copyWith => __$RemoveFieldCopyWithImpl<_RemoveField>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RemoveField&&(identical(other.tableIndex, tableIndex) || other.tableIndex == tableIndex)&&(identical(other.fieldIndex, fieldIndex) || other.fieldIndex == fieldIndex));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,tableIndex,fieldIndex);
+
+@override
+String toString() {
+  return 'JsonToDartEvent.removeField(tableIndex: $tableIndex, fieldIndex: $fieldIndex)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$RemoveFieldCopyWith<$Res> implements $JsonToDartEventCopyWith<$Res> {
+  factory _$RemoveFieldCopyWith(_RemoveField value, $Res Function(_RemoveField) _then) = __$RemoveFieldCopyWithImpl;
+@useResult
+$Res call({
+ int tableIndex, int fieldIndex
+});
+
+
+
+
+}
+/// @nodoc
+class __$RemoveFieldCopyWithImpl<$Res>
+    implements _$RemoveFieldCopyWith<$Res> {
+  __$RemoveFieldCopyWithImpl(this._self, this._then);
+
+  final _RemoveField _self;
+  final $Res Function(_RemoveField) _then;
+
+/// Create a copy of JsonToDartEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? tableIndex = null,Object? fieldIndex = null,}) {
+  return _then(_RemoveField(
+tableIndex: null == tableIndex ? _self.tableIndex : tableIndex // ignore: cast_nullable_to_non_nullable
+as int,fieldIndex: null == fieldIndex ? _self.fieldIndex : fieldIndex // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _UpdateTableTitle implements JsonToDartEvent {
+  const _UpdateTableTitle({required this.title, required this.tableIndex});
+  
+
+ final  String title;
+ final  int tableIndex;
+
+/// Create a copy of JsonToDartEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$UpdateTableTitleCopyWith<_UpdateTableTitle> get copyWith => __$UpdateTableTitleCopyWithImpl<_UpdateTableTitle>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UpdateTableTitle&&(identical(other.title, title) || other.title == title)&&(identical(other.tableIndex, tableIndex) || other.tableIndex == tableIndex));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,title,tableIndex);
+
+@override
+String toString() {
+  return 'JsonToDartEvent.updateTableTitle(title: $title, tableIndex: $tableIndex)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$UpdateTableTitleCopyWith<$Res> implements $JsonToDartEventCopyWith<$Res> {
+  factory _$UpdateTableTitleCopyWith(_UpdateTableTitle value, $Res Function(_UpdateTableTitle) _then) = __$UpdateTableTitleCopyWithImpl;
+@useResult
+$Res call({
+ String title, int tableIndex
+});
+
+
+
+
+}
+/// @nodoc
+class __$UpdateTableTitleCopyWithImpl<$Res>
+    implements _$UpdateTableTitleCopyWith<$Res> {
+  __$UpdateTableTitleCopyWithImpl(this._self, this._then);
+
+  final _UpdateTableTitle _self;
+  final $Res Function(_UpdateTableTitle) _then;
+
+/// Create a copy of JsonToDartEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? title = null,Object? tableIndex = null,}) {
+  return _then(_UpdateTableTitle(
+title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,tableIndex: null == tableIndex ? _self.tableIndex : tableIndex // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _UpdateField implements JsonToDartEvent {
+  const _UpdateField({required this.tableIndex, required this.fieldIndex, this.title, this.jsonTitle, this.type});
+  
+
+ final  int tableIndex;
+ final  int fieldIndex;
+ final  String? title;
+ final  String? jsonTitle;
+ final  String? type;
+
+/// Create a copy of JsonToDartEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$UpdateFieldCopyWith<_UpdateField> get copyWith => __$UpdateFieldCopyWithImpl<_UpdateField>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UpdateField&&(identical(other.tableIndex, tableIndex) || other.tableIndex == tableIndex)&&(identical(other.fieldIndex, fieldIndex) || other.fieldIndex == fieldIndex)&&(identical(other.title, title) || other.title == title)&&(identical(other.jsonTitle, jsonTitle) || other.jsonTitle == jsonTitle)&&(identical(other.type, type) || other.type == type));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,tableIndex,fieldIndex,title,jsonTitle,type);
+
+@override
+String toString() {
+  return 'JsonToDartEvent.updateField(tableIndex: $tableIndex, fieldIndex: $fieldIndex, title: $title, jsonTitle: $jsonTitle, type: $type)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$UpdateFieldCopyWith<$Res> implements $JsonToDartEventCopyWith<$Res> {
+  factory _$UpdateFieldCopyWith(_UpdateField value, $Res Function(_UpdateField) _then) = __$UpdateFieldCopyWithImpl;
+@useResult
+$Res call({
+ int tableIndex, int fieldIndex, String? title, String? jsonTitle, String? type
+});
+
+
+
+
+}
+/// @nodoc
+class __$UpdateFieldCopyWithImpl<$Res>
+    implements _$UpdateFieldCopyWith<$Res> {
+  __$UpdateFieldCopyWithImpl(this._self, this._then);
+
+  final _UpdateField _self;
+  final $Res Function(_UpdateField) _then;
+
+/// Create a copy of JsonToDartEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? tableIndex = null,Object? fieldIndex = null,Object? title = freezed,Object? jsonTitle = freezed,Object? type = freezed,}) {
+  return _then(_UpdateField(
+tableIndex: null == tableIndex ? _self.tableIndex : tableIndex // ignore: cast_nullable_to_non_nullable
+as int,fieldIndex: null == fieldIndex ? _self.fieldIndex : fieldIndex // ignore: cast_nullable_to_non_nullable
+as int,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String?,jsonTitle: freezed == jsonTitle ? _self.jsonTitle : jsonTitle // ignore: cast_nullable_to_non_nullable
+as String?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _DeleteTable implements JsonToDartEvent {
+  const _DeleteTable({required this.tableIndex});
+  
+
+ final  int tableIndex;
+
+/// Create a copy of JsonToDartEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$DeleteTableCopyWith<_DeleteTable> get copyWith => __$DeleteTableCopyWithImpl<_DeleteTable>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeleteTable&&(identical(other.tableIndex, tableIndex) || other.tableIndex == tableIndex));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,tableIndex);
+
+@override
+String toString() {
+  return 'JsonToDartEvent.deleteTable(tableIndex: $tableIndex)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$DeleteTableCopyWith<$Res> implements $JsonToDartEventCopyWith<$Res> {
+  factory _$DeleteTableCopyWith(_DeleteTable value, $Res Function(_DeleteTable) _then) = __$DeleteTableCopyWithImpl;
+@useResult
+$Res call({
+ int tableIndex
+});
+
+
+
+
+}
+/// @nodoc
+class __$DeleteTableCopyWithImpl<$Res>
+    implements _$DeleteTableCopyWith<$Res> {
+  __$DeleteTableCopyWithImpl(this._self, this._then);
+
+  final _DeleteTable _self;
+  final $Res Function(_DeleteTable) _then;
+
+/// Create a copy of JsonToDartEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? tableIndex = null,}) {
+  return _then(_DeleteTable(
+tableIndex: null == tableIndex ? _self.tableIndex : tableIndex // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _ReorderField implements JsonToDartEvent {
+  const _ReorderField({required this.tableIndex, required this.oldIndex, required this.newIndex});
+  
+
+ final  int tableIndex;
+ final  int oldIndex;
+ final  int newIndex;
+
+/// Create a copy of JsonToDartEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ReorderFieldCopyWith<_ReorderField> get copyWith => __$ReorderFieldCopyWithImpl<_ReorderField>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReorderField&&(identical(other.tableIndex, tableIndex) || other.tableIndex == tableIndex)&&(identical(other.oldIndex, oldIndex) || other.oldIndex == oldIndex)&&(identical(other.newIndex, newIndex) || other.newIndex == newIndex));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,tableIndex,oldIndex,newIndex);
+
+@override
+String toString() {
+  return 'JsonToDartEvent.reorderField(tableIndex: $tableIndex, oldIndex: $oldIndex, newIndex: $newIndex)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ReorderFieldCopyWith<$Res> implements $JsonToDartEventCopyWith<$Res> {
+  factory _$ReorderFieldCopyWith(_ReorderField value, $Res Function(_ReorderField) _then) = __$ReorderFieldCopyWithImpl;
+@useResult
+$Res call({
+ int tableIndex, int oldIndex, int newIndex
+});
+
+
+
+
+}
+/// @nodoc
+class __$ReorderFieldCopyWithImpl<$Res>
+    implements _$ReorderFieldCopyWith<$Res> {
+  __$ReorderFieldCopyWithImpl(this._self, this._then);
+
+  final _ReorderField _self;
+  final $Res Function(_ReorderField) _then;
+
+/// Create a copy of JsonToDartEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? tableIndex = null,Object? oldIndex = null,Object? newIndex = null,}) {
+  return _then(_ReorderField(
+tableIndex: null == tableIndex ? _self.tableIndex : tableIndex // ignore: cast_nullable_to_non_nullable
+as int,oldIndex: null == oldIndex ? _self.oldIndex : oldIndex // ignore: cast_nullable_to_non_nullable
+as int,newIndex: null == newIndex ? _self.newIndex : newIndex // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

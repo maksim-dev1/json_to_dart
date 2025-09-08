@@ -4,7 +4,7 @@ import 'package:json_to_dart/futures/json_panel/presentation/json_panel.dart';
 import 'package:json_to_dart/futures/models_panel/presentation/models_panel.dart';
 import 'package:json_to_dart/futures/tables_panel/presentation/tables_panel.dart';
 import 'package:json_to_dart/old_features/home/presentation/view/components/git_button.dart';
-import 'package:json_to_dart/old_features/home/presentation/view/components/resizable_panels.dart';
+import 'package:json_to_dart/shared/components/resizable_panels.dart';
 import 'package:json_to_dart/shared/components/app_box.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -31,7 +31,6 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: const [GitButton(), WBox(22)],
       ),
       body: ResizablePanels(
-        // dividerThickness: 12,
         dividerBuilder: (ctx, idx) {
           return Padding(
             padding: const EdgeInsets.all(4),

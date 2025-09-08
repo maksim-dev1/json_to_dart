@@ -7,7 +7,7 @@ import 'package:json_to_dart/futures/tables_panel/presentation/components/custom
 import 'package:json_to_dart/old_features/home/presentation/view/components/git_button.dart';
 import 'package:json_to_dart/old_features/home/presentation/view/components/panels/center_panel_child.dart';
 import 'package:json_to_dart/old_features/home/presentation/view/components/panels/left_panel_child.dart';
-import 'package:json_to_dart/old_features/home/presentation/view/components/resizable_panels.dart';
+import 'package:json_to_dart/shared/components/resizable_panels.dart';
 import 'package:json_to_dart/old_features/home/presentation/view/components/table_view.dart';
 import 'package:json_to_dart/shared/components/app_box.dart';
 

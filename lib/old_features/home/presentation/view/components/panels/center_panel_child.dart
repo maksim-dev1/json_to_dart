@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:json_to_dart/old_features/home/domain/entities/table_entity.dart';
+import 'package:json_to_dart/shared/entities/table_entity.dart';
 import 'package:json_to_dart/old_features/home/presentation/bloc/json_bloc.dart';
 import 'package:json_to_dart/old_features/home/presentation/view/components/table_view.dart';
 import 'package:json_to_dart/shared/components/app_box.dart';

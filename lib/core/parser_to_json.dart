@@ -4,7 +4,7 @@
 // ---- вспомогательные сущности (твои freezed-классы остаются без изменений) ----
 // TablesEntity, TableEntity, FieldEntity — как у тебя (не дублирую их здесь)
 
-import 'package:json_to_dart/old_features/home/domain/entities/table_entity.dart';
+import 'package:json_to_dart/shared/entities/table_entity.dart';
 
 /// Точка входа: строит TablesEntity из уже распарсенного JSON (`parsed`).
 ///

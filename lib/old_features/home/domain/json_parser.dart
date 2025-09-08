@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:json_to_dart/old_features/home/domain/entities/table_entity.dart';
+import 'package:json_to_dart/shared/entities/table_entity.dart';
 
 class JsonParser {
   TablesEntity parseJson(String jsonString) {
