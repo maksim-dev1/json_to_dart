@@ -52,12 +52,12 @@ class _HomeScreenState extends State<HomeScreen> {
             // defaultWidth: 200,
             child: JsonPanel(),
           ),
-          Panel(
-            backgroundColor: Color.fromARGB(255, 2, 2, 2),
-            minWidth: 600,
-            defaultWidth: 500,
-            child: TablesPanel(),
-          ),
+          // Panel(
+          //   backgroundColor: Color.fromARGB(255, 2, 2, 2),
+          //   minWidth: 600,
+          //   defaultWidth: 500,
+          //   child: TablesPanel(),
+          // ),
           Panel(
             backgroundColor: Color.fromARGB(255, 18, 18, 18),
             minWidth: 100,
