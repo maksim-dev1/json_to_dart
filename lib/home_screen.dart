@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:json_to_dart/futures/json_panel/presentation/json_panel.dart';
 import 'package:json_to_dart/futures/models_panel/presentation/models_panel.dart';
-import 'package:json_to_dart/futures/tables_panel/presentation/tables_panel.dart';
-import 'package:json_to_dart/old_features/home/presentation/view/components/git_button.dart';
-import 'package:json_to_dart/shared/components/resizable_panels.dart';
 import 'package:json_to_dart/shared/components/app_box.dart';
+import 'package:json_to_dart/shared/components/git_button.dart';
+import 'package:json_to_dart/shared/components/resizable_panels.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -46,24 +45,8 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
         panels: const [
-          Panel(
-            backgroundColor: Color.fromARGB(255, 18, 18, 18),
-            // minWidth: 100,
-            // defaultWidth: 200,
-            child: JsonPanel(),
-          ),
-          // Panel(
-          //   backgroundColor: Color.fromARGB(255, 2, 2, 2),
-          //   minWidth: 600,
-          //   defaultWidth: 500,
-          //   child: TablesPanel(),
-          // ),
-          Panel(
-            backgroundColor: Color.fromARGB(255, 18, 18, 18),
-            minWidth: 100,
-            defaultWidth: 200,
-            child: ModelsPanel(),
-          ),
+          Panel(backgroundColor: Color.fromARGB(255, 18, 18, 18), child: JsonPanel()),
+          Panel(backgroundColor: Color.fromARGB(255, 18, 18, 18), child: ModelsPanel()),
         ],
       ),
     );

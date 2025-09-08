@@ -2,8 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:json_to_dart/core/parser_to_json.dart';
-import 'package:json_to_dart/shared/entities/table_entity.dart';
 import 'package:re_editor/re_editor.dart';
 
 part 'json_to_dart_event.dart';
@@ -15,47 +13,6 @@ class JsonToDartBloc extends Bloc<JsonToDartEvent, JsonToDartState> {
     on<JsonToDartEvent>(
       (event, emit) => switch (event) {
         _Started(:final json) => _start(emit: emit, json: json),
-        _UpdateNullable(:final nullable, :final tableIndex, :final fieldIndex) => _updateNullable(
-          emit: emit,
-          nullable: nullable,
-          tableIndex: tableIndex,
-          fieldIndex: fieldIndex,
-        ),
-        _AddTable() => _addTable(emit: emit),
-        _AddField(:final tableIndex) => _addField(emit: emit, tableIndex: tableIndex),
-        _RemoveField(:final tableIndex, :final fieldIndex) => _removeField(
-          emit: emit,
-          tableIndex: tableIndex,
-          fieldIndex: fieldIndex,
-        ),
-        _UpdateTableTitle(:final title, :final tableIndex) => _updateTableTitle(
-          emit: emit,
-          title: title,
-          tableIndex: tableIndex,
-        ),
-        _UpdateField(
-          :final tableIndex,
-          :final fieldIndex,
-          :final jsonTitle,
-          :final title,
-          :final type,
-        ) =>
-          _updateField(
-            emit: emit,
-            tableIndex: tableIndex,
-            fieldIndex: fieldIndex,
-            jsonTitle: jsonTitle,
-            title: title,
-            type: type,
-          ),
-          _DeleteTable(:final tableIndex) => _deleteTable(emit: emit, tableIndex: tableIndex),
-          _ReorderField(:final tableIndex, :final oldIndex, :final newIndex) => _reorderField(
-  emit: emit,
-  tableIndex: tableIndex,
-  oldIndex: oldIndex,
-  newIndex: newIndex,
-),
-
       },
     );
   }
@@ -74,9 +31,11 @@ class JsonToDartBloc extends Bloc<JsonToDartEvent, JsonToDartState> {
 
     try {
       final parsed = jsonDecode(trimmed);
+      final generated = generateDartModels(parsed, rootClass: "Update");
 
-      final tablesEntity = buildTablesFromParsed(parsed);
-      emit(JsonToDartState.loaded(tables: tablesEntity));
+      emit(JsonToDartState.loaded(tables: generated));
+
+      emit(JsonToDartState.loaded(tables: parsed.toString()));
     } on FormatException catch (e) {
       emit(JsonToDartState.error(message: e.toString()));
     } catch (e) {
@@ -84,177 +43,93 @@ class JsonToDartBloc extends Bloc<JsonToDartEvent, JsonToDartState> {
     }
   }
 
-  Future<void> _updateNullable({
-    required Emitter<JsonToDartState> emit,
-    required bool nullable,
-    required int tableIndex,
-    required int fieldIndex,
-  }) async {
-    try {
-      if (state is Loaded) {
-        // Берём старые таблицы
-        final oldTables = (state as Loaded).tables.tables;
+  String generateDartModels(dynamic json, {String rootClass = "Root"}) {
+    final buffer = StringBuffer();
 
-        // Создаём изменяемую копию списка таблиц
-        final newTables = List.of(oldTables);
+    void generateClass(Map<String, dynamic> map, String className) {
+      final fields = <String>[];
+      final fromJson = <String>[];
+      final toJson = <String>[];
 
-        // Получаем конкретную таблицу и создаём копию её списка полей
-        final table = newTables[tableIndex];
-        final newFields = List.of(table.fields);
+      map.forEach((key, value) {
+        final fieldName = _camelCase(key);
+        String type;
 
-        // Обновляем нужное поле через copyWith
-        newFields[fieldIndex] = newFields[fieldIndex].copyWith(isNullable: nullable);
-
-        // Заменяем таблицу на её копию с новым списком полей (предполагается наличие copyWith у TableEntity)
-        newTables[tableIndex] = table.copyWith(fields: newFields);
-
-        // Эмитим новый state с полностью новым списком таблиц
-        emit(JsonToDartState.loaded(tables: TablesEntity(tables: newTables)));
-      }
-    } catch (e) {
-      emit(JsonToDartState.error(message: e.toString()));
-    }
-  }
-
-  Future<void> _addTable({required Emitter<JsonToDartState> emit}) async {
-    try {
-      if (state is Loaded) {
-        final newTables = List.of((state as Loaded).tables.tables);
-        newTables.add(const TableEntity(name: 'NewTable', fields: []));
-        emit(JsonToDartState.loaded(tables: TablesEntity(tables: newTables)));
-      } else {
-        emit(
-          const JsonToDartState.loaded(
-            tables: TablesEntity(
-              tables: [TableEntity(name: 'NewTable', fields: [])],
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      emit(JsonToDartState.error(message: e.toString()));
-    }
-  }
-
-  Future<void> _addField({required Emitter<JsonToDartState> emit, required int tableIndex}) async {
-    try {
-      if (state is Loaded) {
-        final newTables = List.of((state as Loaded).tables.tables);
-        final newFields = List.of(newTables[tableIndex].fields);
-        newFields.add(const FieldEntity(jsonTitle: '', title: '', type: '', isNullable: false));
-        newTables[tableIndex] = newTables[tableIndex].copyWith(fields: newFields);
-        emit(JsonToDartState.loaded(tables: TablesEntity(tables: newTables)));
-      }
-    } catch (e) {
-      emit(JsonToDartState.error(message: e.toString()));
-    }
-  }
-
-  Future<void> _removeField({
-    required Emitter<JsonToDartState> emit,
-    required int tableIndex,
-    required int fieldIndex,
-  }) async {
-    try {
-      if (state is Loaded) {
-        final newTables = List.of((state as Loaded).tables.tables);
-        final newFields = List.of(newTables[tableIndex].fields);
-        newFields.removeAt(fieldIndex);
-        newTables[tableIndex] = newTables[tableIndex].copyWith(fields: newFields);
-        emit(JsonToDartState.loaded(tables: TablesEntity(tables: newTables)));
-      }
-    } catch (e) {
-      emit(JsonToDartState.error(message: e.toString()));
-    }
-  }
-
-  Future<void> _updateTableTitle({
-    required Emitter<JsonToDartState> emit,
-    required String title,
-    required int tableIndex,
-  }) async {
-    try {
-      if (state is Loaded) {
-        final newTables = List.of((state as Loaded).tables.tables);
-        newTables[tableIndex] = newTables[tableIndex].copyWith(name: title);
-        emit(JsonToDartState.loaded(tables: TablesEntity(tables: newTables)));
-      }
-    } catch (e) {
-      emit(JsonToDartState.error(message: e.toString()));
-    }
-  }
-
-  Future<void> _updateField({
-    required Emitter<JsonToDartState> emit,
-    required int tableIndex,
-    required int fieldIndex,
-    String? jsonTitle,
-    String? title,
-    String? type,
-  }) async {
-    try {
-      if (state is Loaded) {
-        final newTables = List.of((state as Loaded).tables.tables);
-        final newFields = List.of(newTables[tableIndex].fields);
-        if(jsonTitle != null) {
-           newFields[fieldIndex] = newFields[fieldIndex].copyWith(
-          jsonTitle: jsonTitle,
-        );
-        } else if(title != null) {
-          newFields[fieldIndex] = newFields[fieldIndex].copyWith(
-          title: title,
-        );
-        } else if(type != null) {
-          newFields[fieldIndex] = newFields[fieldIndex].copyWith(
-          type: type,
-        );
+        if (value is int) {
+          type = "int";
+        } else if (value is double) {
+          type = "double";
+        } else if (value is bool) {
+          type = "bool";
+        } else if (value is String) {
+          type = "String";
+        } else if (value is List) {
+          if (value.isNotEmpty && value.first is Map) {
+            final nestedClass = _capitalize(key);
+            generateClass(value.first as Map<String, dynamic>, nestedClass);
+            type = "List<$nestedClass>";
+          } else {
+            type = "List<dynamic>";
+          }
+        } else if (value is Map) {
+          final nestedClass = _capitalize(key);
+          generateClass(value as Map<String, dynamic>, nestedClass);
+          type = nestedClass;
+        } else {
+          type = "dynamic";
         }
-       
-        newTables[tableIndex] = newTables[tableIndex].copyWith(fields: newFields);
-        emit(JsonToDartState.loaded(tables: TablesEntity(tables: newTables)));
+
+        fields.add("  final $type $fieldName;");
+        fromJson.add("      $fieldName: json['$key'],");
+        toJson.add("      '$key': $fieldName,");
+      });
+
+      buffer.writeln("class $className {");
+      for (final f in fields) {
+        buffer.writeln(f);
       }
-    } catch (e) {
-      emit(JsonToDartState.error(message: e.toString()));
-    }
-  }
-  
-  Future<void> _deleteTable({required Emitter<JsonToDartState> emit, required int tableIndex}) async {
-    try {
-      if (state is Loaded) {
-        final newTables = List.of((state as Loaded).tables.tables);
-        newTables.removeAt(tableIndex);
-        emit(JsonToDartState.loaded(tables: TablesEntity(tables: newTables)));
+
+      // конструктор
+      buffer.writeln();
+      buffer.writeln("  $className({");
+      for (final f in fields) {
+        final name = f.split(" ").last.replaceAll(";", "");
+        buffer.writeln("    required this.$name,");
       }
-    } catch (e) {
-      emit(JsonToDartState.error(message: e.toString()));
+      buffer.writeln("  });");
+
+      // fromJson
+      buffer.writeln();
+      buffer.writeln("  factory $className.fromJson(Map<String, dynamic> json) {");
+      buffer.writeln("    return $className(");
+      for (final f in fromJson) {
+        buffer.writeln(f);
+      }
+      buffer.writeln("    );");
+      buffer.writeln("  }");
+
+      // toJson
+      buffer.writeln();
+      buffer.writeln("  Map<String, dynamic> toJson() {");
+      buffer.writeln("    return {");
+      for (final f in toJson) {
+        buffer.writeln(f);
+      }
+      buffer.writeln("    };");
+      buffer.writeln("  }");
+
+      buffer.writeln("}\n");
     }
+
+    if (json is Map<String, dynamic>) {
+      generateClass(json, rootClass);
+    } else if (json is List && json.isNotEmpty && json.first is Map) {
+      generateClass((json.first as Map).cast<String, dynamic>(), rootClass);
+    }
+
+    return buffer.toString();
   }
 
-  Future<void> _reorderField({
-  required Emitter<JsonToDartState> emit,
-  required int tableIndex,
-  required int oldIndex,
-  required int newIndex,
-}) async {
-  try {
-    if (state is Loaded) {
-      final oldTables = (state as Loaded).tables.tables;
-      final newTables = List.of(oldTables);
-
-      final table = newTables[tableIndex];
-      final newFields = List.of(table.fields);
-
-      // Вытаскиваем элемент
-      final field = newFields.removeAt(oldIndex);
-      // Вставляем на новую позицию
-      newFields.insert(newIndex, field);
-
-      newTables[tableIndex] = table.copyWith(fields: newFields);
-
-      emit(JsonToDartState.loaded(tables: TablesEntity(tables: newTables)));
-    }
-  } catch (e) {
-    emit(JsonToDartState.error(message: e.toString()));
-  }
-}
+  String _capitalize(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+  String _camelCase(String s) => s.replaceAllMapped(RegExp(r'_(\w)'), (m) => m[1]!.toUpperCase());
 }
