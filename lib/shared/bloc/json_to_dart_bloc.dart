@@ -31,105 +31,86 @@ class JsonToDartBloc extends Bloc<JsonToDartEvent, JsonToDartState> {
 
     try {
       final parsed = jsonDecode(trimmed);
-      final generated = generateDartModels(parsed, rootClass: "Update");
 
-      emit(JsonToDartState.loaded(tables: generated));
+      // Генерация кода моделей
+      final modelsCode = generateModels(parsed, rootName: 'TelegramCallback');
 
-      emit(JsonToDartState.loaded(tables: parsed.toString()));
-    } on FormatException catch (e) {
-      emit(JsonToDartState.error(message: e.toString()));
-    } catch (e) {
+      emit(JsonToDartState.loaded(tables: modelsCode));
+
+    }  catch (e) {
       emit(JsonToDartState.error(message: e.toString()));
     }
   }
 
-  String generateDartModels(dynamic json, {String rootClass = "Root"}) {
-    final buffer = StringBuffer();
+  // Вспомогательные функции для генерации кода
+  String _capitalize(String s) => s.isEmpty ? '' : s[0].toUpperCase() + s.substring(1);
 
-    void generateClass(Map<String, dynamic> map, String className) {
-      final fields = <String>[];
-      final fromJson = <String>[];
-      final toJson = <String>[];
-
-      map.forEach((key, value) {
-        final fieldName = _camelCase(key);
-        String type;
-
-        if (value is int) {
-          type = "int";
-        } else if (value is double) {
-          type = "double";
-        } else if (value is bool) {
-          type = "bool";
-        } else if (value is String) {
-          type = "String";
-        } else if (value is List) {
-          if (value.isNotEmpty && value.first is Map) {
-            final nestedClass = _capitalize(key);
-            generateClass(value.first as Map<String, dynamic>, nestedClass);
-            type = "List<$nestedClass>";
-          } else {
-            type = "List<dynamic>";
-          }
-        } else if (value is Map) {
-          final nestedClass = _capitalize(key);
-          generateClass(value as Map<String, dynamic>, nestedClass);
-          type = nestedClass;
-        } else {
-          type = "dynamic";
-        }
-
-        fields.add("  final $type $fieldName;");
-        fromJson.add("      $fieldName: json['$key'],");
-        toJson.add("      '$key': $fieldName,");
-      });
-
-      buffer.writeln("class $className {");
-      for (final f in fields) {
-        buffer.writeln(f);
-      }
-
-      // конструктор
-      buffer.writeln();
-      buffer.writeln("  $className({");
-      for (final f in fields) {
-        final name = f.split(" ").last.replaceAll(";", "");
-        buffer.writeln("    required this.$name,");
-      }
-      buffer.writeln("  });");
-
-      // fromJson
-      buffer.writeln();
-      buffer.writeln("  factory $className.fromJson(Map<String, dynamic> json) {");
-      buffer.writeln("    return $className(");
-      for (final f in fromJson) {
-        buffer.writeln(f);
-      }
-      buffer.writeln("    );");
-      buffer.writeln("  }");
-
-      // toJson
-      buffer.writeln();
-      buffer.writeln("  Map<String, dynamic> toJson() {");
-      buffer.writeln("    return {");
-      for (final f in toJson) {
-        buffer.writeln(f);
-      }
-      buffer.writeln("    };");
-      buffer.writeln("  }");
-
-      buffer.writeln("}\n");
+  String? _detectType(dynamic value, Set<String> buffer) {
+    if (value is String) return 'String';
+    if (value is int) return 'int';
+    if (value is double) return 'double';
+    if (value is bool) return 'bool';
+    if (value is List) {
+      final inner = value.isNotEmpty ? _detectType(value.first, buffer) : 'dynamic';
+      return 'List<$inner>';
     }
-
-    if (json is Map<String, dynamic>) {
-      generateClass(json, rootClass);
-    } else if (json is List && json.isNotEmpty && json.first is Map) {
-      generateClass((json.first as Map).cast<String, dynamic>(), rootClass);
+    if (value is Map<String, dynamic>) {
+      // появится отдельный класс
+      return null;
     }
+    return 'dynamic';
+  }
 
+  void _processClass(
+    String className,
+    Map<String, dynamic> obj,
+    StringBuffer out,
+    Set<String> generated,
+  ) {
+    if (generated.contains(className)) return;
+    generated.add(className);
+
+    out.writeln('@JsonSerializable(explicitToJson: true)');
+    out.writeln('class $className {');
+    obj.forEach((key, value) {
+      final type = _detectType(value, generated);
+      if (type == null) {
+        final sub = _capitalize(key);
+        out.writeln('  final $sub? $key;');
+        _processClass(sub, value as Map<String, dynamic>, out, generated);
+      } else {
+        out.writeln('  final $type? $key;');
+      }
+    });
+
+    out.writeln();
+    // Конструктор
+    out.writeln('  $className({');
+    for (var key in obj.keys) {
+      out.writeln('    this.$key,');
+    }
+    out.writeln('  });\n');
+
+    out.writeln(
+      '  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);',
+    );
+    out.writeln('  Map<String, dynamic> toJson() => _\$${className}ToJson(this);');
+    out.writeln('}\n');
+  }
+
+  String generateModels(dynamic decoded, {String rootName = 'AutoModel'}) {
+    final buffer = StringBuffer()
+      ..writeln("import 'package:json_annotation/json_annotation.dart';")
+      ..writeln("part '${rootName.toLowerCase()}.g.dart';\n");
+
+    final generated = <String>{};
+    if (decoded is List && decoded.isNotEmpty && decoded.first is Map<String, dynamic>) {
+      _processClass(rootName, decoded.first as Map<String, dynamic>, buffer, generated);
+    } else if (decoded is Map<String, dynamic>) {
+      _processClass(rootName, decoded, buffer, generated);
+    } else {
+      return '// Нечего генерировать: корневой объект не Map и не List<Map>\n';
+    }
     return buffer.toString();
   }
-
-  String _capitalize(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
-  String _camelCase(String s) => s.replaceAllMapped(RegExp(r'_(\w)'), (m) => m[1]!.toUpperCase());
 }

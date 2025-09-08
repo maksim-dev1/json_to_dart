@@ -12,8 +12,9 @@ class ModelsPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<JsonToDartBloc, JsonToDartState>(
-      builder: (context, state) => switch (state) {
-        Loaded(:final tables) => LoadedState(tables: tables),
+      builder: (context, state) => 
+      switch (state) {
+        Loaded(:final tables) =>  LoadedState(tables: tables),
         _ => const Text('data'),
       },
     );
