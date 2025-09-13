@@ -5,6 +5,7 @@ import 'package:json_to_dart/core/parser.dart';
 import 'package:json_to_dart/shared/bloc/json_to_dart_bloc.dart';
 import 'package:json_to_dart/home_screen.dart';
 import 'package:json_to_dart/theme/app_theme.dart';
+import 'package:re_editor/re_editor.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 class App extends StatelessWidget {
@@ -19,7 +20,8 @@ class App extends StatelessWidget {
       home: RepositoryProvider<JsonParserService>(
         create: (context) => JsonParserService(),
         child: BlocProvider(
-          create: (context) => JsonToDartBloc(parserService: context.read<JsonParserService>()),
+          create: (context) => JsonToDartBloc(parserService: context.read<JsonParserService>())
+            ..add(JsonToDartEvent.started(json: CodeLineEditingValue(codeLines: CodeLines([])))),
           child: const HomeScreen(),
         ),
       ),

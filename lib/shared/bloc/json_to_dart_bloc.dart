@@ -11,7 +11,9 @@ part 'json_to_dart_bloc.freezed.dart';
 
 class JsonToDartBloc extends Bloc<JsonToDartEvent, JsonToDartState> {
   final JsonParserService _parserService;
-  JsonToDartBloc({required JsonParserService parserService}) : _parserService = parserService, super(const _Initial()) {
+  JsonToDartBloc({required JsonParserService parserService})
+    : _parserService = parserService,
+      super(const _Initial()) {
     on<JsonToDartEvent>(
       (event, emit) => switch (event) {
         _Started(:final json) => _start(emit: emit, json: json),
@@ -28,13 +30,13 @@ class JsonToDartBloc extends Bloc<JsonToDartEvent, JsonToDartState> {
       final trimmed = raw.trim();
 
       if (trimmed.isEmpty) {
-        emit(const JsonToDartState.initial());
+        emit(const JsonToDartState.loaded(tables: ''));
         return;
       }
       final parsed = jsonDecode(trimmed);
 
       final tables = _parserService.parse(rootClassName: 'Root', parsedJson: parsed);
-      emit( JsonToDartState.loaded(tables: tables));
+      emit(JsonToDartState.loaded(tables: tables));
     } catch (e) {
       emit(JsonToDartState.error(message: e.toString()));
     }
