@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$JsonToDartEvent {
 
- CodeLineEditingValue get json;
+ CodeLineEditingValue get json; FilterConfig? get filters;
 /// Create a copy of JsonToDartEvent
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $JsonToDartEventCopyWith<JsonToDartEvent> get copyWith => _$JsonToDartEventCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is JsonToDartEvent&&(identical(other.json, json) || other.json == json));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is JsonToDartEvent&&(identical(other.json, json) || other.json == json)&&(identical(other.filters, filters) || other.filters == filters));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,json);
+int get hashCode => Object.hash(runtimeType,json,filters);
 
 @override
 String toString() {
-  return 'JsonToDartEvent(json: $json)';
+  return 'JsonToDartEvent(json: $json, filters: $filters)';
 }
 
 
@@ -45,11 +45,11 @@ abstract mixin class $JsonToDartEventCopyWith<$Res>  {
   factory $JsonToDartEventCopyWith(JsonToDartEvent value, $Res Function(JsonToDartEvent) _then) = _$JsonToDartEventCopyWithImpl;
 @useResult
 $Res call({
- CodeLineEditingValue json
+ CodeLineEditingValue json, FilterConfig? filters
 });
 
 
-
+$FilterConfigCopyWith<$Res>? get filters;
 
 }
 /// @nodoc
@@ -62,13 +62,26 @@ class _$JsonToDartEventCopyWithImpl<$Res>
 
 /// Create a copy of JsonToDartEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? json = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? json = null,Object? filters = freezed,}) {
   return _then(_self.copyWith(
 json: null == json ? _self.json : json // ignore: cast_nullable_to_non_nullable
-as CodeLineEditingValue,
+as CodeLineEditingValue,filters: freezed == filters ? _self.filters : filters // ignore: cast_nullable_to_non_nullable
+as FilterConfig?,
   ));
 }
+/// Create a copy of JsonToDartEvent
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$FilterConfigCopyWith<$Res>? get filters {
+    if (_self.filters == null) {
+    return null;
+  }
 
+  return $FilterConfigCopyWith<$Res>(_self.filters!, (value) {
+    return _then(_self.copyWith(filters: value));
+  });
+}
 }
 
 
@@ -147,10 +160,10 @@ return started(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( CodeLineEditingValue json)?  started,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( CodeLineEditingValue json,  FilterConfig? filters)?  started,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Started() when started != null:
-return started(_that.json);case _:
+return started(_that.json,_that.filters);case _:
   return orElse();
 
 }
@@ -168,10 +181,10 @@ return started(_that.json);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( CodeLineEditingValue json)  started,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( CodeLineEditingValue json,  FilterConfig? filters)  started,}) {final _that = this;
 switch (_that) {
 case _Started():
-return started(_that.json);}
+return started(_that.json,_that.filters);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -185,10 +198,10 @@ return started(_that.json);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( CodeLineEditingValue json)?  started,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( CodeLineEditingValue json,  FilterConfig? filters)?  started,}) {final _that = this;
 switch (_that) {
 case _Started() when started != null:
-return started(_that.json);case _:
+return started(_that.json,_that.filters);case _:
   return null;
 
 }
@@ -200,10 +213,11 @@ return started(_that.json);case _:
 
 
 class _Started implements JsonToDartEvent {
-  const _Started({required this.json});
+  const _Started({required this.json, required this.filters});
   
 
 @override final  CodeLineEditingValue json;
+@override final  FilterConfig? filters;
 
 /// Create a copy of JsonToDartEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -215,16 +229,16 @@ _$StartedCopyWith<_Started> get copyWith => __$StartedCopyWithImpl<_Started>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Started&&(identical(other.json, json) || other.json == json));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Started&&(identical(other.json, json) || other.json == json)&&(identical(other.filters, filters) || other.filters == filters));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,json);
+int get hashCode => Object.hash(runtimeType,json,filters);
 
 @override
 String toString() {
-  return 'JsonToDartEvent.started(json: $json)';
+  return 'JsonToDartEvent.started(json: $json, filters: $filters)';
 }
 
 
@@ -235,11 +249,11 @@ abstract mixin class _$StartedCopyWith<$Res> implements $JsonToDartEventCopyWith
   factory _$StartedCopyWith(_Started value, $Res Function(_Started) _then) = __$StartedCopyWithImpl;
 @override @useResult
 $Res call({
- CodeLineEditingValue json
+ CodeLineEditingValue json, FilterConfig? filters
 });
 
 
-
+@override $FilterConfigCopyWith<$Res>? get filters;
 
 }
 /// @nodoc
@@ -252,14 +266,27 @@ class __$StartedCopyWithImpl<$Res>
 
 /// Create a copy of JsonToDartEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? json = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? json = null,Object? filters = freezed,}) {
   return _then(_Started(
 json: null == json ? _self.json : json // ignore: cast_nullable_to_non_nullable
-as CodeLineEditingValue,
+as CodeLineEditingValue,filters: freezed == filters ? _self.filters : filters // ignore: cast_nullable_to_non_nullable
+as FilterConfig?,
   ));
 }
 
+/// Create a copy of JsonToDartEvent
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$FilterConfigCopyWith<$Res>? get filters {
+    if (_self.filters == null) {
+    return null;
+  }
 
+  return $FilterConfigCopyWith<$Res>(_self.filters!, (value) {
+    return _then(_self.copyWith(filters: value));
+  });
+}
 }
 
 /// @nodoc
@@ -376,12 +403,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( String tables)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( String tables,  FilterConfig? filters)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case Loading() when loading != null:
 return loading();case Loaded() when loaded != null:
-return loaded(_that.tables);case Error() when error != null:
+return loaded(_that.tables,_that.filters);case Error() when error != null:
 return error(_that.message);case _:
   return orElse();
 
@@ -400,12 +427,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( String tables)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( String tables,  FilterConfig? filters)  loaded,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case Loading():
 return loading();case Loaded():
-return loaded(_that.tables);case Error():
+return loaded(_that.tables,_that.filters);case Error():
 return error(_that.message);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -420,12 +447,12 @@ return error(_that.message);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( String tables)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( String tables,  FilterConfig? filters)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case Loading() when loading != null:
 return loading();case Loaded() when loaded != null:
-return loaded(_that.tables);case Error() when error != null:
+return loaded(_that.tables,_that.filters);case Error() when error != null:
 return error(_that.message);case _:
   return null;
 
@@ -502,10 +529,11 @@ String toString() {
 
 
 class Loaded implements JsonToDartState {
-  const Loaded({required this.tables});
+  const Loaded({required this.tables, required this.filters});
   
 
  final  String tables;
+ final  FilterConfig? filters;
 
 /// Create a copy of JsonToDartState
 /// with the given fields replaced by the non-null parameter values.
@@ -517,16 +545,16 @@ $LoadedCopyWith<Loaded> get copyWith => _$LoadedCopyWithImpl<Loaded>(this, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Loaded&&(identical(other.tables, tables) || other.tables == tables));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Loaded&&(identical(other.tables, tables) || other.tables == tables)&&(identical(other.filters, filters) || other.filters == filters));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,tables);
+int get hashCode => Object.hash(runtimeType,tables,filters);
 
 @override
 String toString() {
-  return 'JsonToDartState.loaded(tables: $tables)';
+  return 'JsonToDartState.loaded(tables: $tables, filters: $filters)';
 }
 
 
@@ -537,11 +565,11 @@ abstract mixin class $LoadedCopyWith<$Res> implements $JsonToDartStateCopyWith<$
   factory $LoadedCopyWith(Loaded value, $Res Function(Loaded) _then) = _$LoadedCopyWithImpl;
 @useResult
 $Res call({
- String tables
+ String tables, FilterConfig? filters
 });
 
 
-
+$FilterConfigCopyWith<$Res>? get filters;
 
 }
 /// @nodoc
@@ -554,14 +582,27 @@ class _$LoadedCopyWithImpl<$Res>
 
 /// Create a copy of JsonToDartState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? tables = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? tables = null,Object? filters = freezed,}) {
   return _then(Loaded(
 tables: null == tables ? _self.tables : tables // ignore: cast_nullable_to_non_nullable
-as String,
+as String,filters: freezed == filters ? _self.filters : filters // ignore: cast_nullable_to_non_nullable
+as FilterConfig?,
   ));
 }
 
+/// Create a copy of JsonToDartState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$FilterConfigCopyWith<$Res>? get filters {
+    if (_self.filters == null) {
+    return null;
+  }
 
+  return $FilterConfigCopyWith<$Res>(_self.filters!, (value) {
+    return _then(_self.copyWith(filters: value));
+  });
+}
 }
 
 /// @nodoc
