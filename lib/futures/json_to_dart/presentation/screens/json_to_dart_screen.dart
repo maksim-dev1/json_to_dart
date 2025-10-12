@@ -1,23 +1,18 @@
+// lib/futures/json_to_dart/presentation/screens/json_to_dart_screen.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:json_to_dart/futures/json_to_dart/domain/enities/filter_config.dart';
-import 'package:json_to_dart/futures/json_to_dart/presentation/bloc/json_to_dart_bloc.dart';
+import 'package:json_to_dart/futures/json_to_dart/presentation/providers/json_to_dart_provider.dart';
 import 'package:json_to_dart/futures/json_to_dart/presentation/components/app_box.dart';
 import 'package:json_to_dart/futures/json_to_dart/presentation/components/git_button.dart';
 import 'package:json_to_dart/futures/json_to_dart/presentation/components/panels/json_panel.dart';
 import 'package:json_to_dart/futures/json_to_dart/presentation/components/panels/models_panel.dart';
 import 'package:json_to_dart/futures/json_to_dart/presentation/components/resizable_panels.dart';
 
-class JsonToDartScreen extends StatefulWidget {
+class JsonToDartScreen extends StatelessWidget {
   const JsonToDartScreen({super.key});
 
-  @override
-  State<JsonToDartScreen> createState() => _JsonToDartScreenState();
-}
-
-class _JsonToDartScreenState extends State<JsonToDartScreen> {
-  FilterConfig? _filters;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,82 +48,235 @@ class _JsonToDartScreenState extends State<JsonToDartScreen> {
           Panel(backgroundColor: Color.fromARGB(255, 18, 18, 18), child: ModelsPanel()),
         ],
       ),
-      floatingActionButton: BlocListener<JsonToDartBloc, JsonToDartState>(
-        listener: (context, state) {
-          if (state is Loaded) {
-            _filters = state.filters;
-          }
+      floatingActionButton: Consumer<JsonToDartProvider>(
+        builder: (context, provider, _) {
+          return FloatingActionButton(
+            backgroundColor: const Color.fromARGB(255, 30, 144, 255),
+            child: const Icon(Icons.filter_list_rounded, color: Colors.white),
+            onPressed: () => _showFilterDialog(context, provider.filters),
+          );
         },
-        child: FloatingActionButton(
-          backgroundColor: const Color.fromARGB(255, 30, 144, 255),
-          child: const Icon(Icons.filter_list_rounded, color: Colors.white),
-          onPressed: () {
-            showDialog<void>(
-              context: context,
-              builder: (context) {
-                _filters ??= const FilterConfig(
-                  isDto: false,
-                  isEntity: false,
-                  useFreezed: false,
-                  imports: false,
-                  generateToString: false,
-                  generateCopyWith: false,
-                );
-                return FilterDialog(
-                  isDto: _filters!.isDto,
-                  isEntity: _filters!.isEntity,
-                  useFreezed: _filters!.useFreezed,
-                  imports: _filters!.imports,
-                  generateToString: _filters!.generateToString,
-                  generateCopyWith: _filters!.generateCopyWith,
-                );
-              },
-            );
-          },
-        ),
       ),
+    );
+  }
+
+  void _showFilterDialog(BuildContext context, FilterConfig currentFilters) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return _FilterDialog(
+          initialFilters: currentFilters,
+          onApply: (newFilters) {
+            context.read<JsonToDartProvider>().updateFilters(newFilters);
+            Navigator.of(dialogContext).pop();
+          },
+        );
+      },
     );
   }
 }
 
-class FilterDialog extends StatelessWidget {
-  final bool isDto;
-  final void Function(bool)? onChangedIsDto;
-  final bool isEntity;
-  final void Function(bool)? onChangedIsEntity;
+class _FilterDialog extends StatefulWidget {
+  final FilterConfig initialFilters;
+  final void Function(FilterConfig) onApply;
 
-  final bool useFreezed;
-  final bool imports;
-  final bool generateToString;
-  final bool generateCopyWith;
-
-  const FilterDialog({
-    required this.isDto,
-    required this.isEntity,
-    required this.useFreezed,
-    required this.imports,
-    required this.generateToString,
-    required this.generateCopyWith,
-    super.key,
-    this.onChangedIsDto,
-    this.onChangedIsEntity,
+  const _FilterDialog({
+    required this.initialFilters,
+    required this.onApply,
   });
+
+  @override
+  State<_FilterDialog> createState() => _FilterDialogState();
+}
+
+class _FilterDialogState extends State<_FilterDialog> {
+  late bool _useSerialization;
+  late bool _useFreezed;
+  late bool _isDto;
+  late bool _isEntity;
+  late bool _imports;
+  late bool _generateToString;
+  late bool _generateCopyWith;
+  late bool _generateEquality;
+  late bool _makeFieldsFinal;
+  late bool _generateDocumentation;
+
+  @override
+  void initState() {
+    super.initState();
+    _useSerialization = widget.initialFilters.useSerialization;
+    _useFreezed = widget.initialFilters.useFreezed;
+    _isDto = widget.initialFilters.isDto;
+    _isEntity = widget.initialFilters.isEntity;
+    _imports = widget.initialFilters.imports;
+    _generateToString = widget.initialFilters.generateToString;
+    _generateCopyWith = widget.initialFilters.generateCopyWith;
+    _generateEquality = widget.initialFilters.generateEquality;
+    _makeFieldsFinal = widget.initialFilters.makeFieldsFinal;
+    _generateDocumentation = widget.initialFilters.generateDocumentation;
+  }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Filter'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SwitchListTile(title: const Text('DTO'), value: isDto, onChanged: onChangedIsDto),
-          SwitchListTile(
-            title: const Text('Entity'),
-            value: isEntity,
-            onChanged: onChangedIsEntity,
+      title: const Text('Generation Settings'),
+      content: SizedBox(
+        width: 500,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Freezed
+              SwitchListTile(
+                title: const Text('Use Freezed'),
+                value: _useFreezed,
+                onChanged: (value) {
+                  setState(() {
+                    _useFreezed = value;
+                    if (value) {
+                      _generateToString = false;
+                      _generateCopyWith = false;
+                      _generateEquality = false;
+                      _makeFieldsFinal = false;
+                    }
+                  });
+                },
+              ),
+              
+              const Divider(height: 24),
+              
+              // Serialization
+              SwitchListTile(
+                title: const Text('Use Serialization'),
+                value: _useSerialization,
+                onChanged: (value) => setState(() => _useSerialization = value),
+              ),
+              
+              const Divider(height: 24),
+              
+              // Suffixes
+              SwitchListTile(
+                title: const Text('DTO Suffix'),
+                value: _isDto,
+                onChanged: (value) {
+                  setState(() {
+                    _isDto = value;
+                    if (value) _isEntity = false;
+                  });
+                },
+              ),
+              SwitchListTile(
+                title: const Text('Entity Suffix'),
+                value: _isEntity,
+                onChanged: (value) {
+                  setState(() {
+                    _isEntity = value;
+                    if (value) _isDto = false;
+                  });
+                },
+              ),
+              
+              const Divider(height: 24),
+              
+              // Basic options
+              SwitchListTile(
+                title: const Text('Add Imports'),
+                value: _imports,
+                onChanged: (value) => setState(() => _imports = value),
+              ),
+              
+              // Final Fields
+              SwitchListTile(
+                title: const Text('Final Fields'),
+                value: _makeFieldsFinal,
+                onChanged: (value) {
+                  setState(() {
+                    _makeFieldsFinal = value;
+                    if (value && _useFreezed) {
+                      _useFreezed = false;
+                    }
+                  });
+                },
+              ),
+              
+              const Divider(height: 24),
+              
+              // Helper methods
+              SwitchListTile(
+                title: const Text('Generate toString'),
+                value: _generateToString,
+                onChanged: (value) {
+                  setState(() {
+                    _generateToString = value;
+                    if (value && _useFreezed) {
+                      _useFreezed = false;
+                    }
+                  });
+                },
+              ),
+              SwitchListTile(
+                title: const Text('Generate copyWith'),
+                value: _generateCopyWith,
+                onChanged: (value) {
+                  setState(() {
+                    _generateCopyWith = value;
+                    if (value && _useFreezed) {
+                      _useFreezed = false;
+                    }
+                  });
+                },
+              ),
+              SwitchListTile(
+                title: const Text('Generate Equality'),
+                value: _generateEquality,
+                onChanged: (value) {
+                  setState(() {
+                    _generateEquality = value;
+                    if (value && _useFreezed) {
+                      _useFreezed = false;
+                    }
+                  });
+                },
+              ),
+              
+              const Divider(height: 24),
+              
+              // Documentation
+              SwitchListTile(
+                title: const Text('Generate Documentation'),
+                value: _generateDocumentation,
+                onChanged: (value) => setState(() => _generateDocumentation = value),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            widget.onApply(
+              FilterConfig(
+                useSerialization: _useSerialization,
+                useFreezed: _useFreezed,
+                isDto: _isDto,
+                isEntity: _isEntity,
+                imports: _imports,
+                generateToString: _generateToString,
+                generateCopyWith: _generateCopyWith,
+                generateEquality: _generateEquality,
+                makeFieldsFinal: _makeFieldsFinal,
+                generateDocumentation: _generateDocumentation,
+              ),
+            );
+          },
+          child: const Text('Apply'),
+        ),
+      ],
     );
   }
 }

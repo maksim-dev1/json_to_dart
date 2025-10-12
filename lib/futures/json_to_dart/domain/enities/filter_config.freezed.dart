@@ -14,7 +14,12 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FilterConfig {
 
- bool get isDto; bool get isEntity; bool get useFreezed; bool get imports; bool get generateToString; bool get generateCopyWith;
+// Суффиксы (взаимоисключающие)
+ bool get isDto; bool get isEntity;// Сериализация
+ bool get useSerialization; bool get useFreezed;// Базовые опции
+ bool get imports; bool get makeFieldsFinal;// Вспомогательные методы (только для ручной сериализации)
+ bool get generateToString; bool get generateCopyWith; bool get generateEquality;// Документация
+ bool get generateDocumentation;
 /// Create a copy of FilterConfig
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +30,16 @@ $FilterConfigCopyWith<FilterConfig> get copyWith => _$FilterConfigCopyWithImpl<F
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FilterConfig&&(identical(other.isDto, isDto) || other.isDto == isDto)&&(identical(other.isEntity, isEntity) || other.isEntity == isEntity)&&(identical(other.useFreezed, useFreezed) || other.useFreezed == useFreezed)&&(identical(other.imports, imports) || other.imports == imports)&&(identical(other.generateToString, generateToString) || other.generateToString == generateToString)&&(identical(other.generateCopyWith, generateCopyWith) || other.generateCopyWith == generateCopyWith));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FilterConfig&&(identical(other.isDto, isDto) || other.isDto == isDto)&&(identical(other.isEntity, isEntity) || other.isEntity == isEntity)&&(identical(other.useSerialization, useSerialization) || other.useSerialization == useSerialization)&&(identical(other.useFreezed, useFreezed) || other.useFreezed == useFreezed)&&(identical(other.imports, imports) || other.imports == imports)&&(identical(other.makeFieldsFinal, makeFieldsFinal) || other.makeFieldsFinal == makeFieldsFinal)&&(identical(other.generateToString, generateToString) || other.generateToString == generateToString)&&(identical(other.generateCopyWith, generateCopyWith) || other.generateCopyWith == generateCopyWith)&&(identical(other.generateEquality, generateEquality) || other.generateEquality == generateEquality)&&(identical(other.generateDocumentation, generateDocumentation) || other.generateDocumentation == generateDocumentation));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isDto,isEntity,useFreezed,imports,generateToString,generateCopyWith);
+int get hashCode => Object.hash(runtimeType,isDto,isEntity,useSerialization,useFreezed,imports,makeFieldsFinal,generateToString,generateCopyWith,generateEquality,generateDocumentation);
 
 @override
 String toString() {
-  return 'FilterConfig(isDto: $isDto, isEntity: $isEntity, useFreezed: $useFreezed, imports: $imports, generateToString: $generateToString, generateCopyWith: $generateCopyWith)';
+  return 'FilterConfig(isDto: $isDto, isEntity: $isEntity, useSerialization: $useSerialization, useFreezed: $useFreezed, imports: $imports, makeFieldsFinal: $makeFieldsFinal, generateToString: $generateToString, generateCopyWith: $generateCopyWith, generateEquality: $generateEquality, generateDocumentation: $generateDocumentation)';
 }
 
 
@@ -45,7 +50,7 @@ abstract mixin class $FilterConfigCopyWith<$Res>  {
   factory $FilterConfigCopyWith(FilterConfig value, $Res Function(FilterConfig) _then) = _$FilterConfigCopyWithImpl;
 @useResult
 $Res call({
- bool isDto, bool isEntity, bool useFreezed, bool imports, bool generateToString, bool generateCopyWith
+ bool isDto, bool isEntity, bool useSerialization, bool useFreezed, bool imports, bool makeFieldsFinal, bool generateToString, bool generateCopyWith, bool generateEquality, bool generateDocumentation
 });
 
 
@@ -62,14 +67,18 @@ class _$FilterConfigCopyWithImpl<$Res>
 
 /// Create a copy of FilterConfig
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isDto = null,Object? isEntity = null,Object? useFreezed = null,Object? imports = null,Object? generateToString = null,Object? generateCopyWith = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isDto = null,Object? isEntity = null,Object? useSerialization = null,Object? useFreezed = null,Object? imports = null,Object? makeFieldsFinal = null,Object? generateToString = null,Object? generateCopyWith = null,Object? generateEquality = null,Object? generateDocumentation = null,}) {
   return _then(_self.copyWith(
 isDto: null == isDto ? _self.isDto : isDto // ignore: cast_nullable_to_non_nullable
 as bool,isEntity: null == isEntity ? _self.isEntity : isEntity // ignore: cast_nullable_to_non_nullable
+as bool,useSerialization: null == useSerialization ? _self.useSerialization : useSerialization // ignore: cast_nullable_to_non_nullable
 as bool,useFreezed: null == useFreezed ? _self.useFreezed : useFreezed // ignore: cast_nullable_to_non_nullable
 as bool,imports: null == imports ? _self.imports : imports // ignore: cast_nullable_to_non_nullable
+as bool,makeFieldsFinal: null == makeFieldsFinal ? _self.makeFieldsFinal : makeFieldsFinal // ignore: cast_nullable_to_non_nullable
 as bool,generateToString: null == generateToString ? _self.generateToString : generateToString // ignore: cast_nullable_to_non_nullable
 as bool,generateCopyWith: null == generateCopyWith ? _self.generateCopyWith : generateCopyWith // ignore: cast_nullable_to_non_nullable
+as bool,generateEquality: null == generateEquality ? _self.generateEquality : generateEquality // ignore: cast_nullable_to_non_nullable
+as bool,generateDocumentation: null == generateDocumentation ? _self.generateDocumentation : generateDocumentation // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -152,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isDto,  bool isEntity,  bool useFreezed,  bool imports,  bool generateToString,  bool generateCopyWith)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isDto,  bool isEntity,  bool useSerialization,  bool useFreezed,  bool imports,  bool makeFieldsFinal,  bool generateToString,  bool generateCopyWith,  bool generateEquality,  bool generateDocumentation)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FilterConfig() when $default != null:
-return $default(_that.isDto,_that.isEntity,_that.useFreezed,_that.imports,_that.generateToString,_that.generateCopyWith);case _:
+return $default(_that.isDto,_that.isEntity,_that.useSerialization,_that.useFreezed,_that.imports,_that.makeFieldsFinal,_that.generateToString,_that.generateCopyWith,_that.generateEquality,_that.generateDocumentation);case _:
   return orElse();
 
 }
@@ -173,10 +182,10 @@ return $default(_that.isDto,_that.isEntity,_that.useFreezed,_that.imports,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isDto,  bool isEntity,  bool useFreezed,  bool imports,  bool generateToString,  bool generateCopyWith)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isDto,  bool isEntity,  bool useSerialization,  bool useFreezed,  bool imports,  bool makeFieldsFinal,  bool generateToString,  bool generateCopyWith,  bool generateEquality,  bool generateDocumentation)  $default,) {final _that = this;
 switch (_that) {
 case _FilterConfig():
-return $default(_that.isDto,_that.isEntity,_that.useFreezed,_that.imports,_that.generateToString,_that.generateCopyWith);}
+return $default(_that.isDto,_that.isEntity,_that.useSerialization,_that.useFreezed,_that.imports,_that.makeFieldsFinal,_that.generateToString,_that.generateCopyWith,_that.generateEquality,_that.generateDocumentation);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -190,10 +199,10 @@ return $default(_that.isDto,_that.isEntity,_that.useFreezed,_that.imports,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isDto,  bool isEntity,  bool useFreezed,  bool imports,  bool generateToString,  bool generateCopyWith)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isDto,  bool isEntity,  bool useSerialization,  bool useFreezed,  bool imports,  bool makeFieldsFinal,  bool generateToString,  bool generateCopyWith,  bool generateEquality,  bool generateDocumentation)?  $default,) {final _that = this;
 switch (_that) {
 case _FilterConfig() when $default != null:
-return $default(_that.isDto,_that.isEntity,_that.useFreezed,_that.imports,_that.generateToString,_that.generateCopyWith);case _:
+return $default(_that.isDto,_that.isEntity,_that.useSerialization,_that.useFreezed,_that.imports,_that.makeFieldsFinal,_that.generateToString,_that.generateCopyWith,_that.generateEquality,_that.generateDocumentation);case _:
   return null;
 
 }
@@ -205,15 +214,24 @@ return $default(_that.isDto,_that.isEntity,_that.useFreezed,_that.imports,_that.
 
 
 class _FilterConfig implements FilterConfig {
-  const _FilterConfig({required this.isDto, required this.isEntity, required this.useFreezed, required this.imports, required this.generateToString, required this.generateCopyWith});
+  const _FilterConfig({this.isDto = false, this.isEntity = false, this.useSerialization = true, this.useFreezed = false, this.imports = true, this.makeFieldsFinal = true, this.generateToString = false, this.generateCopyWith = false, this.generateEquality = false, this.generateDocumentation = false});
   
 
-@override final  bool isDto;
-@override final  bool isEntity;
-@override final  bool useFreezed;
-@override final  bool imports;
-@override final  bool generateToString;
-@override final  bool generateCopyWith;
+// Суффиксы (взаимоисключающие)
+@override@JsonKey() final  bool isDto;
+@override@JsonKey() final  bool isEntity;
+// Сериализация
+@override@JsonKey() final  bool useSerialization;
+@override@JsonKey() final  bool useFreezed;
+// Базовые опции
+@override@JsonKey() final  bool imports;
+@override@JsonKey() final  bool makeFieldsFinal;
+// Вспомогательные методы (только для ручной сериализации)
+@override@JsonKey() final  bool generateToString;
+@override@JsonKey() final  bool generateCopyWith;
+@override@JsonKey() final  bool generateEquality;
+// Документация
+@override@JsonKey() final  bool generateDocumentation;
 
 /// Create a copy of FilterConfig
 /// with the given fields replaced by the non-null parameter values.
@@ -225,16 +243,16 @@ _$FilterConfigCopyWith<_FilterConfig> get copyWith => __$FilterConfigCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FilterConfig&&(identical(other.isDto, isDto) || other.isDto == isDto)&&(identical(other.isEntity, isEntity) || other.isEntity == isEntity)&&(identical(other.useFreezed, useFreezed) || other.useFreezed == useFreezed)&&(identical(other.imports, imports) || other.imports == imports)&&(identical(other.generateToString, generateToString) || other.generateToString == generateToString)&&(identical(other.generateCopyWith, generateCopyWith) || other.generateCopyWith == generateCopyWith));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FilterConfig&&(identical(other.isDto, isDto) || other.isDto == isDto)&&(identical(other.isEntity, isEntity) || other.isEntity == isEntity)&&(identical(other.useSerialization, useSerialization) || other.useSerialization == useSerialization)&&(identical(other.useFreezed, useFreezed) || other.useFreezed == useFreezed)&&(identical(other.imports, imports) || other.imports == imports)&&(identical(other.makeFieldsFinal, makeFieldsFinal) || other.makeFieldsFinal == makeFieldsFinal)&&(identical(other.generateToString, generateToString) || other.generateToString == generateToString)&&(identical(other.generateCopyWith, generateCopyWith) || other.generateCopyWith == generateCopyWith)&&(identical(other.generateEquality, generateEquality) || other.generateEquality == generateEquality)&&(identical(other.generateDocumentation, generateDocumentation) || other.generateDocumentation == generateDocumentation));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isDto,isEntity,useFreezed,imports,generateToString,generateCopyWith);
+int get hashCode => Object.hash(runtimeType,isDto,isEntity,useSerialization,useFreezed,imports,makeFieldsFinal,generateToString,generateCopyWith,generateEquality,generateDocumentation);
 
 @override
 String toString() {
-  return 'FilterConfig(isDto: $isDto, isEntity: $isEntity, useFreezed: $useFreezed, imports: $imports, generateToString: $generateToString, generateCopyWith: $generateCopyWith)';
+  return 'FilterConfig(isDto: $isDto, isEntity: $isEntity, useSerialization: $useSerialization, useFreezed: $useFreezed, imports: $imports, makeFieldsFinal: $makeFieldsFinal, generateToString: $generateToString, generateCopyWith: $generateCopyWith, generateEquality: $generateEquality, generateDocumentation: $generateDocumentation)';
 }
 
 
@@ -245,7 +263,7 @@ abstract mixin class _$FilterConfigCopyWith<$Res> implements $FilterConfigCopyWi
   factory _$FilterConfigCopyWith(_FilterConfig value, $Res Function(_FilterConfig) _then) = __$FilterConfigCopyWithImpl;
 @override @useResult
 $Res call({
- bool isDto, bool isEntity, bool useFreezed, bool imports, bool generateToString, bool generateCopyWith
+ bool isDto, bool isEntity, bool useSerialization, bool useFreezed, bool imports, bool makeFieldsFinal, bool generateToString, bool generateCopyWith, bool generateEquality, bool generateDocumentation
 });
 
 
@@ -262,14 +280,18 @@ class __$FilterConfigCopyWithImpl<$Res>
 
 /// Create a copy of FilterConfig
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isDto = null,Object? isEntity = null,Object? useFreezed = null,Object? imports = null,Object? generateToString = null,Object? generateCopyWith = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isDto = null,Object? isEntity = null,Object? useSerialization = null,Object? useFreezed = null,Object? imports = null,Object? makeFieldsFinal = null,Object? generateToString = null,Object? generateCopyWith = null,Object? generateEquality = null,Object? generateDocumentation = null,}) {
   return _then(_FilterConfig(
 isDto: null == isDto ? _self.isDto : isDto // ignore: cast_nullable_to_non_nullable
 as bool,isEntity: null == isEntity ? _self.isEntity : isEntity // ignore: cast_nullable_to_non_nullable
+as bool,useSerialization: null == useSerialization ? _self.useSerialization : useSerialization // ignore: cast_nullable_to_non_nullable
 as bool,useFreezed: null == useFreezed ? _self.useFreezed : useFreezed // ignore: cast_nullable_to_non_nullable
 as bool,imports: null == imports ? _self.imports : imports // ignore: cast_nullable_to_non_nullable
+as bool,makeFieldsFinal: null == makeFieldsFinal ? _self.makeFieldsFinal : makeFieldsFinal // ignore: cast_nullable_to_non_nullable
 as bool,generateToString: null == generateToString ? _self.generateToString : generateToString // ignore: cast_nullable_to_non_nullable
 as bool,generateCopyWith: null == generateCopyWith ? _self.generateCopyWith : generateCopyWith // ignore: cast_nullable_to_non_nullable
+as bool,generateEquality: null == generateEquality ? _self.generateEquality : generateEquality // ignore: cast_nullable_to_non_nullable
+as bool,generateDocumentation: null == generateDocumentation ? _self.generateDocumentation : generateDocumentation // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

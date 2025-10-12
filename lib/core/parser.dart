@@ -1,109 +1,70 @@
-// json_to_dart_service.dart
-// Простой и понятный генератор Dart-классов из уже распарсенного JSON (Map / List).
-//
-// Подробная документация
-// =======================
-// Описание
-// ---------
-// Этот файл содержит лёгкий и расширяемый сервис для генерации Dart-классов
-// (Plain data classes или упрощённые freezed-совместимые классы) из уже
-// распарсенного JSON (результат jsonDecode(...)). Цель — предоставить
-// аккуратный, понятный и расширяемый код-генератор, удобный для встраивания
-// в инструменты разработки (CLI, web-генератор, плагин IDE и т.д.).
-//
-// Основные возможности
-// ---------------------
-// - Преобразование ключей JSON в camelCase для полей и в PascalCase для имён классов.
-// - Инферирование типов (int, double, bool, String, DateTime).
-// - Поддержка вложенных объектов -> генерация отдельных классов.
-// - Поддержка списков примитивов и списков объектов (List<T>).
-// - Генерация методов fromJson/toJson для каждого класса.
-// - Опциональная генерация copyWith и toString для обычных классов (не-freezed).
-// - Упрощённая поддержка freezed (useFreezed = true) — генерирует аннотации и части.
-//
-// Quick start
-// -----------
-// 1) Пример вызова сервиса:
-//
-// ```dart
-// final service = JsonParserService();
-// final code = service.parse(
-//   rootClassName: 'user',
-//   parsedJson: jsonDecode(jsonString),
-//   imports: true,
-//   generateToString: true,
-//   generateCopyWith: true,
-// );
-// print(code); // сгенерированный Dart-код
-// ```
-//
-// Пояснение параметров см. комментарии у метода parse ниже.
+// lib/core/parser/json_to_dart_service.dart
 
 class JsonParserService {
-  /// Генерирует Dart-код для классов по [parsedJson] с корневым именем [rootClassName].
-  ///
-  /// Параметры:
-  /// - [rootClassName] — имя корневого класса (любой регистр — преобразуется в PascalCase).
-  /// - [parsedJson] — Map или List — результат jsonDecode(...).
-  /// - [isDto] — пометка DTO (комментарий в начале файла). Если true — к именам добавляется суффикс `DTO`.
-  /// - [isEntity] — пометка Entity (комментарий в начале файла). Если true — к именам добавляется суффикс `Entity`.
-  ///   (Если оба флага true — приоритет у DTO.)
-  /// - [useFreezed] — если true, генерируется упрощённый вариант, совместимый с freezed.
-  /// - [imports] — если true, добавляются полезные импорты в начало файла.
-  /// - [generateToString] — если true, для обычных классов генерируется toString().
-  /// - [generateCopyWith] — если true, для обычных классов генерируется copyWith().
   String parse({
     required String rootClassName,
     required dynamic parsedJson,
+    bool useSerialization = true,
+    bool useFreezed = false,
     bool isDto = false,
-    bool isEntity = true,
-    bool useFreezed = true,
+    bool isEntity = false,
     bool imports = false,
     bool generateToString = false,
     bool generateCopyWith = false,
+    bool generateEquality = false,
+    bool makeFieldsFinal = true,
+    bool generateDocumentation = false,
   }) {
     final generator = _Generator(
       rootClassName: rootClassName,
       parsedJson: parsedJson,
+      useSerialization: useSerialization,
+      useFreezed: useFreezed,
       isDto: isDto,
       isEntity: isEntity,
-      useFreezed: useFreezed,
       imports: imports,
       generateToString: generateToString,
       generateCopyWith: generateCopyWith,
+      generateEquality: generateEquality,
+      makeFieldsFinal: makeFieldsFinal,
+      generateDocumentation: generateDocumentation,
     );
 
     return generator.generate();
   }
 }
 
-// Вспомогательный приватный класс с реализацией генерации
 class _Generator {
   final String rootClassName;
   final dynamic parsedJson;
+  final bool useSerialization;
+  final bool useFreezed;
   final bool isDto;
   final bool isEntity;
-  final bool useFreezed;
   final bool imports;
   final bool generateToString;
   final bool generateCopyWith;
+  final bool generateEquality;
+  final bool makeFieldsFinal;
+  final bool generateDocumentation;
 
-  // Собираем классы по имени — чтобы не генерировать дубли
   final Map<String, _ClassSpec> _classes = {};
 
   _Generator({
     required this.rootClassName,
     required this.parsedJson,
+    required this.useSerialization,
+    required this.useFreezed,
     required this.isDto,
     required this.isEntity,
-    required this.useFreezed,
     required this.imports,
     required this.generateToString,
     required this.generateCopyWith,
+    required this.generateEquality,
+    required this.makeFieldsFinal,
+    required this.generateDocumentation,
   });
 
-  /// Применяет нужный суффикс к имени класса в зависимости от флагов isDto/isEntity.
-  /// Приоритет: DTO > Entity. Если ни один флаг не задан — возвращает имя без изменений.
   String _applySuffix(String basePascalName) {
     if (isDto) return '${basePascalName}DTO';
     if (isEntity) return '${basePascalName}Entity';
@@ -111,46 +72,38 @@ class _Generator {
   }
 
   String generate() {
-    // Корневое имя с суффиксом (если нужно)
     final rootName = _applySuffix(_toPascalCase(rootClassName));
-
-    // Анализируем входной JSON и строим спецификации классов
     _analyze(rootName, parsedJson);
 
-    // Строим итоговый код
     final buffer = StringBuffer();
 
     if (imports) {
       buffer.writeln("import 'dart:convert';");
+      
       if (useFreezed) {
         buffer.writeln("import 'package:freezed_annotation/freezed_annotation.dart';");
-        // part-файлы используют имя корневого класса (включая суффикс, если был)
         buffer.writeln("part '${_toSnakeCase(rootName)}.freezed.dart';");
-        buffer.writeln("part '${_toSnakeCase(rootName)}.g.dart';");
+        
+        if (useSerialization) {
+          buffer.writeln("part '${_toSnakeCase(rootName)}.g.dart';");
+        }
       }
+      
       buffer.writeln();
     }
 
-    // Комментарий метки DTO/Entity
     if (isDto) buffer.writeln('/// DTO: auto-generated');
     if (isEntity) buffer.writeln('/// Entity: auto-generated');
 
-    // Если useFreezed — генерируем соответствующие аннотации и код
-    // Выводим корневой класс первым, затем остальные — чтобы Root всегда был сверху.
     final specs = <_ClassSpec>[];
     final visited = <String>{};
 
-    // Рекурсивная функция обхода зависимостей.
-    // Добавляет текущий spec в specs, затем рекурсивно добавляет типы, на которые он ссылается.
     void addRec(String name) {
-      if (name.isEmpty) return;
-      if (visited.contains(name)) return;
+      if (name.isEmpty || visited.contains(name)) return;
       final spec = _classes[name];
       if (spec == null) return;
       visited.add(name);
-      // Добавляем текущий класс в список (root будет впереди)
       specs.add(spec);
-      // Рекурсивно добавляем зависимости (типы, на которые ссылаются поля)
       for (final f in spec.fields.values) {
         final dep = f.typeName;
         if (dep != null && _classes.containsKey(dep) && !visited.contains(dep)) {
@@ -159,18 +112,11 @@ class _Generator {
       }
     }
 
-    if (_classes.containsKey(rootName)) {
-      addRec(rootName);
-    }
-
-    // Добавляем остаток (независимые / не достижимые от root) в том же порядке
+    if (_classes.containsKey(rootName)) addRec(rootName);
     for (final key in _classes.keys) {
-      if (!visited.contains(key)) {
-        addRec(key);
-      }
+      if (!visited.contains(key)) addRec(key);
     }
 
-    // Рендерим в порядке specs (root — первый)
     for (final spec in specs) {
       buffer.writeln(_renderClass(spec));
       buffer.writeln();
@@ -179,19 +125,15 @@ class _Generator {
     return buffer.toString();
   }
 
-  // Рекурсивный анализ JSON, собирает поля и создаёт вложенные классы
   void _analyze(String className, dynamic node) {
-    if (_classes.containsKey(className)) return; // уже разобрано
+    if (_classes.containsKey(className)) return;
 
     if (node is List) {
-      // если список — берем первый ненулевой элемент для анализа
       final sample = node.firstWhere((e) => e != null, orElse: () => null);
       if (sample == null) {
-        // пустой список — представим как List<dynamic>
         _classes[className] = _ClassSpec(name: className, fields: {});
         return;
       }
-      // Анализируем пример (все элементы считаем однотипными)
       _analyze(className, sample);
       return;
     }
@@ -203,10 +145,8 @@ class _Generator {
         final fieldName = _toCamelCase(_sanitizeFieldName(rawKey));
         final inferred = _inferType(fieldName, value, rawKey);
 
-        // Если inferred.typeName установлен, он уже содержит нужный суффикс
         fields[fieldName] = inferred;
 
-        // Если поле — вложенный объект, рекурсивно анализируем
         if (inferred.isCustomClass && inferred.sample != null) {
           _analyze(inferred.typeName!, inferred.sample);
         } else if (inferred.isListOfCustom && inferred.sample != null) {
@@ -216,30 +156,27 @@ class _Generator {
 
       _classes[className] = _ClassSpec(name: className, fields: fields);
     } else {
-      // Примитив или null — ничего генерировать не нужно
       _classes[className] = _ClassSpec(name: className, fields: {});
     }
   }
 
-  // Определяем тип по значению
   _FieldSpec _inferType(String fieldName, dynamic value, String rawKey) {
     if (value == null) {
-      // Не знаем -> dynamic nullable
-      return _FieldSpec(name: fieldName, dartType: 'dynamic', nullable: true);
+      return _FieldSpec(name: fieldName, dartType: 'dynamic', nullable: true, originalKey: rawKey);
     }
 
-    if (value is int) return _FieldSpec(name: fieldName, dartType: 'int');
-    if (value is double) return _FieldSpec(name: fieldName, dartType: 'double');
-    if (value is bool) return _FieldSpec(name: fieldName, dartType: 'bool');
+    if (value is int) return _FieldSpec(name: fieldName, dartType: 'int', originalKey: rawKey);
+    if (value is double) return _FieldSpec(name: fieldName, dartType: 'double', originalKey: rawKey);
+    if (value is bool) return _FieldSpec(name: fieldName, dartType: 'bool', originalKey: rawKey);
     if (value is String) {
-      // Простая эвристика: ISO8601 -> DateTime
       final maybeDate = DateTime.tryParse(value);
-      if (maybeDate != null) return _FieldSpec(name: fieldName, dartType: 'DateTime');
-      return _FieldSpec(name: fieldName, dartType: 'String');
+      if (maybeDate != null) {
+        return _FieldSpec(name: fieldName, dartType: 'DateTime', originalKey: rawKey);
+      }
+      return _FieldSpec(name: fieldName, dartType: 'String', originalKey: rawKey);
     }
 
     if (value is Map<String, dynamic>) {
-      // Вложенный объект — имя типа базируется на имени поля и получает суффикс через _applySuffix
       final baseTypeName = _toPascalCase(fieldName);
       final typeName = _applySuffix(baseTypeName);
       return _FieldSpec(
@@ -248,14 +185,14 @@ class _Generator {
         isCustomClass: true,
         sample: value,
         typeName: typeName,
+        originalKey: rawKey,
       );
     }
 
     if (value is List) {
-      // определяем тип элементов списка по первому ненулевому элементу
       final sample = value.firstWhere((e) => e != null, orElse: () => null);
       if (sample == null) {
-        return _FieldSpec(name: fieldName, dartType: 'List<dynamic>');
+        return _FieldSpec(name: fieldName, dartType: 'List<dynamic>', originalKey: rawKey);
       }
 
       if (sample is Map<String, dynamic>) {
@@ -267,73 +204,204 @@ class _Generator {
           isListOfCustom: true,
           sample: sample,
           typeName: typeName,
+          originalKey: rawKey,
         );
       }
 
-      // примитивный элемент
       final elementSpec = _inferType(fieldName, sample, rawKey);
-      return _FieldSpec(name: fieldName, dartType: 'List<${elementSpec.dartType}>');
+      return _FieldSpec(
+        name: fieldName,
+        dartType: 'List<${elementSpec.dartType}>',
+        originalKey: rawKey,
+      );
     }
 
-    // fallback
-    return _FieldSpec(name: fieldName, dartType: 'dynamic');
+    return _FieldSpec(name: fieldName, dartType: 'dynamic', originalKey: rawKey);
   }
 
-  // Генерирует текст класса из спецификации
+  bool _needsJsonKey(_FieldSpec f) {
+    if (f.originalKey == null) return false;
+    return f.originalKey != f.name;
+  }
+
+String _generateClassDocumentation(_ClassSpec spec) {
+    if (!generateDocumentation) return '';
+    
+    final buf = StringBuffer();
+    buf.writeln('/// TODO: Purpose of this class - what is ${spec.name} for?');
+    buf.writeln('///');
+    buf.writeln('/// TODO: What this class does - describe main functionality.');
+    buf.writeln('///');
+    buf.writeln('/// Example usage:');
+    buf.writeln('/// ```');
+    
+    // Автоматическая генерация примера на основе полей
+    if (spec.fields.isNotEmpty) {
+      if (useSerialization) {
+        // Пример с JSON
+        buf.writeln('/// final json = {');
+        for (final f in spec.fields.values) {
+          final key = f.originalKey ?? f.name;
+          final exampleValue = _getExampleValue(f);
+          buf.writeln("///   '$key': $exampleValue,");
+        }
+        buf.writeln('/// };');
+        buf.writeln('/// final instance = ${spec.name}.fromJson(json);');
+        if (useSerialization) {
+          buf.writeln('/// print(instance.toJson());');
+        }
+      } else {
+        // Пример с конструктором
+        buf.writeln('/// final instance = ${spec.name}(');
+        for (final f in spec.fields.values) {
+          final exampleValue = _getExampleValue(f);
+          buf.writeln('///   ${f.name}: $exampleValue,');
+        }
+        buf.writeln('/// );');
+      }
+    } else {
+      buf.writeln('/// final instance = ${spec.name}();');
+    }
+    
+    buf.writeln('/// ```');
+    return buf.toString();
+  }
+
+  String _generateFieldDocumentation(_FieldSpec field) {
+    if (!generateDocumentation) return '';
+    
+    final buf = StringBuffer();
+    buf.writeln('  /// TODO: What is this parameter - describe ${field.name}.');
+    buf.writeln('  ///');
+    buf.writeln('  /// TODO: Parameter description - add details, constraints, or special notes.');
+    
+    return buf.toString();
+  }
+
+ String _generateConstructorDocumentation(_ClassSpec spec) {
+    if (!generateDocumentation) return '';
+    
+    final buf = StringBuffer();
+    buf.writeln('  /// Creates a new instance of [${spec.name}] with given parameters.');
+    buf.writeln('  ///');
+    
+    if (spec.fields.isNotEmpty) {
+      buf.writeln('  /// Parameters:');
+      for (final field in spec.fields.values) {
+        buf.writeln('  /// * [${field.name}] - TODO: What is this parameter, special features.');
+      }
+      buf.writeln('  ///');
+      buf.writeln('  /// Example:');
+      buf.writeln('  /// ```');
+      
+      // Автоматическая генерация примера конструктора
+      buf.writeln('  /// final instance = ${spec.name}(');
+      for (final f in spec.fields.values) {
+        final exampleValue = _getExampleValue(f);
+        buf.writeln('  ///   ${f.name}: $exampleValue,');
+      }
+      buf.writeln('  /// );');
+      
+      buf.writeln('  /// ```');
+    }
+    
+    return buf.toString();
+  }
+
+  String _getExampleValue(_FieldSpec field) {
+    switch (field.dartType) {
+      case 'int':
+        return '0';
+      case 'double':
+        return '0.0';
+      case 'bool':
+        return 'true';
+      case 'String':
+        return "'example'";
+      case 'DateTime':
+        return "DateTime.now()";
+      case 'dynamic':
+        return 'null';
+      default:
+        // Для кастомных типов
+        if (field.dartType.startsWith('List<')) {
+          final innerType = field.dartType.substring(5, field.dartType.length - 1);
+          if (innerType == 'int' || innerType == 'double' || innerType == 'bool' || innerType == 'String') {
+            return '[]';
+          }
+          return '[]';
+        }
+        // Для пользовательских классов
+        if (field.isCustomClass) {
+          return '${field.dartType}()';
+        }
+        return 'null';
+    }
+  }
+
+
   String _renderClass(_ClassSpec spec) {
     if (useFreezed) {
-      // В режиме freezed toString и copyWith генерирует сам freezed.
       return _renderFreezedClass(spec);
     }
+    
+    if (useSerialization) {
+      return _renderManualClass(spec);
+    }
+    
+    return _renderPlainClass(spec);
+  }
 
+  String _renderPlainClass(_ClassSpec spec) {
     final buf = StringBuffer();
+
+    if (generateDocumentation) {
+      buf.write(_generateClassDocumentation(spec));
+    }
 
     buf.writeln('class ${spec.name} {');
 
-    // Поля
     for (final f in spec.fields.values) {
+      if (generateDocumentation) {
+        buf.write(_generateFieldDocumentation(f));
+      }
+      
+      final finalMark = makeFieldsFinal ? 'final ' : '';
       final type = f.dartType + (f.nullable && !_isNullableType(f.dartType) ? '?' : '');
-      buf.writeln('  final $type ${f.name};');
+      buf.writeln('  $finalMark$type ${f.name};');
+      
+      if (generateDocumentation) {
+        buf.writeln();
+      }
     }
 
-    buf.writeln();
+    if (!generateDocumentation) {
+      buf.writeln();
+    }
 
-    // Конструктор
+    if (generateDocumentation) {
+      buf.write(_generateConstructorDocumentation(spec));
+    }
+    
     buf.writeln('  ${spec.name}({');
     for (final f in spec.fields.values) {
       final requiredMark = f.nullable ? '' : 'required ';
       buf.writeln('    ${requiredMark}this.${f.name},');
     }
     buf.writeln('  });');
-    buf.writeln();
 
-    // fromJson
-    buf.writeln('  factory ${spec.name}.fromJson(Map<String, dynamic> json) {');
-    buf.writeln('    return ${spec.name}(');
-    for (final f in spec.fields.values) {
-      buf.writeln('      ${f.name}: ${_fromJsonExpression(f)},');
-    }
-    buf.writeln('    );');
-    buf.writeln('  }');
-    buf.writeln();
-
-    // toJson
-    buf.writeln('  Map<String, dynamic> toJson() {');
-    buf.writeln('    return {');
-    for (final f in spec.fields.values) {
-      buf.writeln("      '${_originalKey(f.name)}': ${_toJsonExpression(f)},");
-    }
-    buf.writeln('    };');
-    buf.writeln('  }');
-
-    // copyWith (если включен)
     if (generateCopyWith && spec.fields.isNotEmpty) {
       buf.writeln();
+      if (generateDocumentation) {
+        buf.writeln('  /// TODO: What this method does - creates a copy with new values.');
+        buf.writeln('  ///');
+        buf.writeln('  /// TODO: Method description - explain copy behavior.');
+        buf.writeln('  ///');
+        buf.writeln('  /// TODO: What it returns - a new instance of [${spec.name}].');
+      }
       buf.writeln('  ${spec.name} copyWith({');
       for (final f in spec.fields.values) {
-        // Параметры copyWith должны быть nullable, чтобы можно было не передавать значение
-        final paramType = '${f.dartType}?';
-        buf.writeln('    $paramType ${f.name},');
+        buf.writeln('    ${f.dartType}? ${f.name},');
       }
       buf.writeln('  }) {');
       buf.writeln('    return ${spec.name}(');
@@ -344,9 +412,15 @@ class _Generator {
       buf.writeln('  }');
     }
 
-    // toString (если включен)
     if (generateToString) {
       buf.writeln();
+      if (generateDocumentation) {
+        buf.writeln('  /// TODO: What this method does - converts to string representation.');
+        buf.writeln('  ///');
+        buf.writeln('  /// TODO: Method description - format details.');
+        buf.writeln('  ///');
+        buf.writeln('  /// TODO: What it returns - string with class name and fields.');
+      }
       buf.writeln('  @override');
       buf.writeln('  String toString() {');
       final parts = spec.fields.values.map((f) => '${f.name}: \$${f.name}').join(', ');
@@ -354,38 +428,246 @@ class _Generator {
       buf.writeln('  }');
     }
 
-    buf.writeln('}');
+    if (generateEquality) {
+      buf.writeln();
+      if (generateDocumentation) {
+        buf.writeln('  /// TODO: What this method does - checks equality with another object.');
+        buf.writeln('  ///');
+        buf.writeln('  /// TODO: Method description - comparison logic.');
+        buf.writeln('  ///');
+        buf.writeln('  /// TODO: What it returns - true if equal, false otherwise.');
+      }
+      buf.writeln('  @override');
+      buf.writeln('  bool operator ==(Object other) {');
+      buf.writeln('    if (identical(this, other)) return true;');
+      buf.writeln('    return other is ${spec.name}');
+      for (final f in spec.fields.values) {
+        buf.writeln('      && other.${f.name} == ${f.name}');
+      }
+      buf.writeln('    ;');
+      buf.writeln('  }');
+      buf.writeln();
+      if (generateDocumentation) {
+        buf.writeln('  /// TODO: What this method does - calculates hash code.');
+        buf.writeln('  ///');
+        buf.writeln('  /// TODO: Method description - hash calculation details.');
+        buf.writeln('  ///');
+        buf.writeln('  /// TODO: What it returns - integer hash code.');
+      }
+      buf.writeln('  @override');
+      buf.writeln('  int get hashCode => Object.hash(');
+      buf.writeln('    ${spec.fields.keys.join(',\n    ')},');
+      buf.writeln('  );');
+    }
 
+    buf.writeln('}');
+    return buf.toString();
+  }
+
+  String _renderManualClass(_ClassSpec spec) {
+    final buf = StringBuffer();
+
+    if (generateDocumentation) {
+      buf.write(_generateClassDocumentation(spec));
+    }
+
+    buf.writeln('class ${spec.name} {');
+
+    for (final f in spec.fields.values) {
+      if (generateDocumentation) {
+        buf.write(_generateFieldDocumentation(f));
+      }
+      
+      final finalMark = makeFieldsFinal ? 'final ' : '';
+      final type = f.dartType + (f.nullable && !_isNullableType(f.dartType) ? '?' : '');
+      
+      if (_needsJsonKey(f)) {
+        buf.writeln("  @JsonKey(name: '${f.originalKey}')");
+      }
+      
+      buf.writeln('  $finalMark$type ${f.name};');
+      
+      if (generateDocumentation) {
+        buf.writeln();
+      }
+    }
+
+    if (!generateDocumentation) {
+      buf.writeln();
+    }
+
+    if (generateDocumentation) {
+      buf.write(_generateConstructorDocumentation(spec));
+    }
+    
+    buf.writeln('  ${spec.name}({');
+    for (final f in spec.fields.values) {
+      final requiredMark = f.nullable ? '' : 'required ';
+      buf.writeln('    ${requiredMark}this.${f.name},');
+    }
+    buf.writeln('  });');
+    buf.writeln();
+
+    if (generateDocumentation) {
+      buf.writeln('  /// TODO: What this method does - creates instance from JSON.');
+      buf.writeln('  ///');
+      buf.writeln('  /// TODO: Method description - JSON parsing details.');
+      buf.writeln('  ///');
+      buf.writeln('  /// Parameters:');
+      buf.writeln('  /// * [json] - TODO: JSON map structure description.');
+      buf.writeln('  ///');
+      buf.writeln('  /// TODO: What it returns - new [${spec.name}] instance.');
+    }
+    buf.writeln('  factory ${spec.name}.fromJson(Map<String, dynamic> json) {');
+    buf.writeln('    return ${spec.name}(');
+    for (final f in spec.fields.values) {
+      buf.writeln('      ${f.name}: ${_fromJsonExpression(f)},');
+    }
+    buf.writeln('    );');
+    buf.writeln('  }');
+    buf.writeln();
+
+    if (generateDocumentation) {
+      buf.writeln('  /// TODO: What this method does - converts instance to JSON.');
+      buf.writeln('  ///');
+      buf.writeln('  /// TODO: Method description - JSON serialization details.');
+      buf.writeln('  ///');
+      buf.writeln('  /// TODO: What it returns - JSON map representation.');
+    }
+    buf.writeln('  Map<String, dynamic> toJson() {');
+    buf.writeln('    return {');
+    for (final f in spec.fields.values) {
+      final key = f.originalKey ?? f.name;
+      buf.writeln("      '${key}': ${_toJsonExpression(f)},");
+    }
+    buf.writeln('    };');
+    buf.writeln('  }');
+
+    if (generateCopyWith && spec.fields.isNotEmpty) {
+      buf.writeln();
+      if (generateDocumentation) {
+        buf.writeln('  /// TODO: What this method does - creates a copy with new values.');
+        buf.writeln('  ///');
+        buf.writeln('  /// TODO: Method description - explain copy behavior.');
+        buf.writeln('  ///');
+        buf.writeln('  /// TODO: What it returns - a new instance of [${spec.name}].');
+      }
+      buf.writeln('  ${spec.name} copyWith({');
+      for (final f in spec.fields.values) {
+        buf.writeln('    ${f.dartType}? ${f.name},');
+      }
+      buf.writeln('  }) {');
+      buf.writeln('    return ${spec.name}(');
+      for (final f in spec.fields.values) {
+        buf.writeln('      ${f.name}: ${f.name} ?? this.${f.name},');
+      }
+      buf.writeln('    );');
+      buf.writeln('  }');
+    }
+
+    if (generateToString) {
+      buf.writeln();
+      if (generateDocumentation) {
+        buf.writeln('  /// TODO: What this method does - converts to string representation.');
+        buf.writeln('  ///');
+        buf.writeln('  /// TODO: Method description - format details.');
+        buf.writeln('  ///');
+        buf.writeln('  /// TODO: What it returns - string with class name and fields.');
+      }
+      buf.writeln('  @override');
+      buf.writeln('  String toString() {');
+      final parts = spec.fields.values.map((f) => '${f.name}: \$${f.name}').join(', ');
+      buf.writeln("    return '${spec.name}($parts)';");
+      buf.writeln('  }');
+    }
+
+    if (generateEquality) {
+      buf.writeln();
+      if (generateDocumentation) {
+        buf.writeln('  /// TODO: What this method does - checks equality with another object.');
+        buf.writeln('  ///');
+        buf.writeln('  /// TODO: Method description - comparison logic.');
+        buf.writeln('  ///');
+        buf.writeln('  /// TODO: What it returns - true if equal, false otherwise.');
+      }
+      buf.writeln('  @override');
+      buf.writeln('  bool operator ==(Object other) {');
+      buf.writeln('    if (identical(this, other)) return true;');
+      buf.writeln('    return other is ${spec.name}');
+      for (final f in spec.fields.values) {
+        buf.writeln('      && other.${f.name} == ${f.name}');
+      }
+      buf.writeln('    ;');
+      buf.writeln('  }');
+      buf.writeln();
+      if (generateDocumentation) {
+        buf.writeln('  /// TODO: What this method does - calculates hash code.');
+        buf.writeln('  ///');
+        buf.writeln('  /// TODO: Method description - hash calculation details.');
+        buf.writeln('  ///');
+        buf.writeln('  /// TODO: What it returns - integer hash code.');
+      }
+      buf.writeln('  @override');
+      buf.writeln('  int get hashCode => Object.hash(');
+      buf.writeln('    ${spec.fields.keys.join(',\n    ')},');
+      buf.writeln('  );');
+    }
+
+    buf.writeln('}');
     return buf.toString();
   }
 
   String _renderFreezedClass(_ClassSpec spec) {
     final buf = StringBuffer();
 
+    if (generateDocumentation) {
+      buf.write(_generateClassDocumentation(spec));
+    }
+
     buf.writeln('@freezed');
     buf.writeln('class ${spec.name} with _\$${spec.name} {');
+    
+    if (generateDocumentation) {
+      buf.write(_generateConstructorDocumentation(spec));
+    }
+    
     buf.writeln('  const factory ${spec.name}({');
+    
     for (final f in spec.fields.values) {
       final type = f.dartType + (f.nullable && !_isNullableType(f.dartType) ? '?' : '');
       final requiredMark = f.nullable ? '' : 'required ';
+      
+      if (useSerialization && _needsJsonKey(f)) {
+        buf.writeln("    @JsonKey(name: '${f.originalKey}')");
+      }
+      
       buf.writeln('    $requiredMark$type ${f.name},');
     }
     buf.writeln('  }) = _${spec.name};');
-    buf.writeln();
-    buf.writeln(
-      '  factory ${spec.name}.fromJson(Map<String, dynamic> json) => _\$${spec.name}FromJson(json);',
-    );
+    
+    if (useSerialization) {
+      buf.writeln();
+      if (generateDocumentation) {
+        buf.writeln('  /// TODO: What this method does - creates instance from JSON.');
+        buf.writeln('  ///');
+        buf.writeln('  /// TODO: Method description - JSON parsing details.');
+        buf.writeln('  ///');
+        buf.writeln('  /// Parameters:');
+        buf.writeln('  /// * [json] - TODO: JSON map structure description.');
+      }
+      buf.writeln(
+        '  factory ${spec.name}.fromJson(Map<String, dynamic> json) => _\$${spec.name}FromJson(json);',
+      );
+    }
+    
     buf.writeln('}');
-
     return buf.toString();
   }
 
-  // Преобразование поля из json
   String _fromJsonExpression(_FieldSpec f) {
-    final key = _originalKey(f.name);
+    final key = f.originalKey ?? f.name;
 
     if (f.isCustomClass) {
-      // вложенный объект
       return "json['$key'] != null ? ${f.typeName}.fromJson(Map<String, dynamic>.from(json['$key'])) : null";
     }
 
@@ -397,11 +679,9 @@ class _Generator {
       return "json['$key'] != null ? DateTime.parse(json['$key'] as String) : null";
     }
 
-    // простые типы
     return "json['$key'] as ${_normalizeSimpleTypeForCast(f.dartType)}?";
   }
 
-  // Преобразование поля в json
   String _toJsonExpression(_FieldSpec f) {
     final name = f.name;
 
@@ -420,26 +700,15 @@ class _Generator {
     return name;
   }
 
-  // Оригинальный ключ — возвращаем идентификатор поля как есть (если были ___ замены — можно адаптировать)
-  String _originalKey(String fieldName) {
-    // Простой вариант: предполагаем, что поле в camelCase соответствует ключу в JSON.
-    // Если вам нужны JsonKey(name: ...) — можно расширить.
-    return fieldName; // можно дописать логику для обратного преобразования
-  }
-
   bool _isNullableType(String t) {
-    // Типы, для которых мы не добавляем ? при nullable=true
     return t.startsWith('List<') || t == 'dynamic';
   }
 
   String _normalizeSimpleTypeForCast(String t) {
-    // Нужно возвращать корректную нотацию для приведения
     if (t == 'int' || t == 'double' || t == 'bool' || t == 'String' || t == 'dynamic') return t;
-    // Для кастов к пользовательским типам возвращаем 'Map<String,dynamic>' — но обычно обработка выше перехватывает касты
     return 'Map<String, dynamic>';
   }
 
-  // Преобразует произвольную строку в PascalCase
   String _toPascalCase(String input) {
     final parts = input
         .replaceAll(RegExp('[^0-9a-zA-Z]+'), ' ')
@@ -450,14 +719,12 @@ class _Generator {
     return parts.map((p) => p[0].toUpperCase() + p.substring(1)).join();
   }
 
-  // camelCase
   String _toCamelCase(String input) {
     final pascal = _toPascalCase(input);
     if (pascal.isEmpty) return pascal;
     return pascal[0].toLowerCase() + pascal.substring(1);
   }
 
-  // snake_case for file parts
   String _toSnakeCase(String input) {
     final pascal = _toPascalCase(input);
     final buffer = StringBuffer();
@@ -469,13 +736,11 @@ class _Generator {
     return buffer.toString();
   }
 
-  // Удаляем недопустимые символы из ключей
   String _sanitizeFieldName(String key) {
     return key.replaceAll(RegExp('[^0-9a-zA-Z_]'), '_');
   }
 }
 
-// Простые структуры для хранения спецификаций
 class _ClassSpec {
   final String name;
   final Map<String, _FieldSpec> fields;
@@ -487,14 +752,11 @@ class _FieldSpec {
   final String name;
   final String dartType;
   final bool nullable;
-
-  // Стандартные булевы флаги для удобства
-  final bool isCustomClass; // Map -> custom class
-  final bool isListOfCustom; // List<Map>
-
-  // пример (sample) для рекурсивного анализа
+  final bool isCustomClass;
+  final bool isListOfCustom;
   final Map<String, dynamic>? sample;
-  final String? typeName; // имя пользовательского типа
+  final String? typeName;
+  final String? originalKey;
 
   _FieldSpec({
     required this.name,
@@ -504,5 +766,6 @@ class _FieldSpec {
     this.isListOfCustom = false,
     this.sample,
     this.typeName,
+    this.originalKey,
   });
 }

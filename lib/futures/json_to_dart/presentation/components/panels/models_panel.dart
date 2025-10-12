@@ -1,7 +1,8 @@
+// lib/futures/json_to_dart/presentation/components/panels/models_panel.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:json_to_dart/futures/json_to_dart/presentation/bloc/json_to_dart_bloc.dart';
+import 'package:json_to_dart/futures/json_to_dart/presentation/providers/json_to_dart_provider.dart';
 import 'package:json_to_dart/theme/app_theme.dart';
 import 'package:re_editor/re_editor.dart';
 import 'package:re_highlight/languages/dart.dart';
@@ -11,37 +12,53 @@ class ModelsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<JsonToDartBloc, JsonToDartState>(
-      builder: (context, state) => switch (state) {
-        Loaded(:final tables) => _LoadedState(tables: tables),
-        Loading() => const Center(child: CircularProgressIndicator()),
-        Error(:final message) => _ErrorState(error: message),
-        _ => const SizedBox.shrink(),
+    return Consumer<JsonToDartProvider>(
+      builder: (context, provider, _) {
+        if (provider.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (provider.errorMessage != null) {
+          return _ErrorState(error: provider.errorMessage!);
+        }
+
+        return KeyedSubtree(
+          key: ValueKey(provider.generatedCode),
+          child: _CodeEditorWidget(code: provider.generatedCode),
+        );
       },
     );
   }
 }
 
-class _LoadedState extends StatefulWidget {
-  final String tables;
-  const _LoadedState({required this.tables});
+class _CodeEditorWidget extends StatefulWidget {
+  final String code;
+  const _CodeEditorWidget({required this.code});
 
   @override
-  State<_LoadedState> createState() => _LoadedStateState();
+  State<_CodeEditorWidget> createState() => _CodeEditorWidgetState();
 }
 
-class _LoadedStateState extends State<_LoadedState> {
+class _CodeEditorWidgetState extends State<_CodeEditorWidget> {
   late final CodeLineEditingController _controller;
+
   @override
   void initState() {
     super.initState();
-    _controller = CodeLineEditingController.fromText(widget.tables);
+    _controller = CodeLineEditingController.fromText(widget.code);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return CodeEditor(
       controller: _controller,
+      readOnly: true,
       style: CodeEditorStyle(
         fontFamily: GoogleFonts.firaCode().fontFamily,
         cursorColor: const Color.fromARGB(255, 30, 144, 255),
@@ -51,6 +68,25 @@ class _LoadedStateState extends State<_LoadedState> {
           theme: codeEditorStyle,
         ),
       ),
+      indicatorBuilder: (context, editingController, chunkController, notifier) {
+        return Row(
+          children: [
+            DefaultCodeLineNumber(
+              textStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Colors.grey,
+                fontFamily: GoogleFonts.firaCode().fontFamily,
+              ),
+              focusedTextStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Colors.grey,
+                fontFamily: GoogleFonts.firaCode().fontFamily,
+              ),
+              minNumberCount: 4,
+              controller: editingController,
+              notifier: notifier,
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -76,21 +112,13 @@ class _ErrorState extends StatelessWidget {
             const Icon(Icons.error_outline, color: Colors.red, size: 48),
             const SizedBox(height: 16),
             Text(
-              'Invalid JSON Format',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(color: Colors.red, fontWeight: FontWeight.bold),
+              'Ошибка парсинга',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.red),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             Text(
-              error.replaceAll('FormatException: ', ''),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.red.shade300),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Please check your JSON syntax and try again',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.red.shade200),
+              error,
+              style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
           ],
