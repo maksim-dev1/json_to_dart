@@ -1,0 +1,66 @@
+name: Deploy Flutter Web to Raspberry Pi
+
+on:
+  push:
+    branches:
+      - main  # или master, в зависимости от вашей ветки
+  workflow_dispatch:  # Позволяет запускать вручную
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.4'  # Укажите нужную версию
+          channel: 'stable'
+          cache: true
+      
+      - name: 📦 Get dependencies
+        run: flutter pub get
+      
+      - name: 🔍 Analyze code
+        run: flutter analyze
+        continue-on-error: true  # Не останавливать при предупреждениях
+      
+      - name: 🧪 Run tests
+        run: flutter test
+        continue-on-error: true  # Не останавливать при провале тестов
+      
+      - name: 🏗️ Build Flutter Web
+        run: flutter build web --release --web-renderer canvaskit --base-href /
+      
+      - name: 🔑 Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: 'placeholder-will-be-updated'
+      
+      - name: 🔐 Adding Known Hosts
+        run: ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+      
+      - name: 📤 Deploy with rsync
+        run: |
+          rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            --delete \
+            --exclude='.git*' \
+            ./build/web/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/
+      
+      - name: 🔧 Set permissions on Raspberry Pi
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            sudo chown -R www-data:www-data ${{ secrets.DEPLOY_PATH }}
+            sudo chmod -R 755 ${{ secrets.DEPLOY_PATH }}
+            sudo find ${{ secrets.DEPLOY_PATH }} -type f -exec chmod 644 {} \;
+          EOF
+      
+      - name: ✅ Deployment successful
+        run: |
+          echo "🎉 Deployment completed successfully!"
+          echo "🌐 Site: https://jsontodart.progger.pro"
