@@ -52,7 +52,7 @@ jobs:
             ./build/web/ \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/
       
-      - name: 🔧 Set permissions on Raspberry Pi
+      - name: 🔧 Set permissions for Nginx
         run: |
           ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             sudo chown -R www-data:www-data ${{ secrets.DEPLOY_PATH }}
@@ -64,3 +64,5 @@ jobs:
         run: |
           echo "🎉 Deployment completed successfully!"
           echo "🌐 Site: https://jsontodart.progger.pro"
+          echo "📊 Deployed files:"
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "ls -lh ${{ secrets.DEPLOY_PATH }}"
