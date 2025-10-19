@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:json_to_dart/shared/components/app_box.dart';
+import 'package:json_to_dart/futures/json_to_dart/presentation/components/app_box.dart';
 
 class GitButton extends StatelessWidget {
   const GitButton({super.key});

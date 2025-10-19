@@ -36,8 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   talker_flutter: ^4.9.3
   dio: ^5.8.0+1
-  flutter_bloc: ^9.1.1
-  talker_bloc_logger: ^4.9.3
+  # flutter_bloc: ^9.1.1
+  # talker_bloc_logger: ^4.9.3
   talker_dio_logger: ^4.9.3
   google_fonts: ^6.2.1
   flutter_svg: ^2.2.0
@@ -45,6 +45,8 @@ dependencies:
   freezed_annotation: ^3.1.0
   re_editor: ^0.7.0
   re_highlight: ^0.0.3
+  provider: ^6.1.5+1
+  
 
 dev_dependencies:
   flutter_test:

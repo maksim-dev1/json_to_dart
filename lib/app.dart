@@ -1,7 +1,9 @@
+// lib/app.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:json_to_dart/shared/bloc/json_to_dart_bloc.dart';
-import 'package:json_to_dart/home_screen.dart';
+import 'package:json_to_dart/core/parser.dart';
+import 'package:provider/provider.dart';
+import 'package:json_to_dart/futures/json_to_dart/presentation/providers/json_to_dart_provider.dart';
+import 'package:json_to_dart/futures/json_to_dart/presentation/screens/json_to_dart_screen.dart';
 import 'package:json_to_dart/theme/app_theme.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
@@ -14,7 +16,10 @@ class App extends StatelessWidget {
     return MaterialApp(
       theme: appTheme,
       navigatorObservers: [TalkerRouteObserver(talker)],
-      home: BlocProvider(create: (context) => JsonToDartBloc(), child: const HomeScreen()),
+      home: ChangeNotifierProvider(
+        create: (_) => JsonToDartProvider(JsonParserService()),
+        child: const JsonToDartScreen(),
+      ),
     );
   }
 }
