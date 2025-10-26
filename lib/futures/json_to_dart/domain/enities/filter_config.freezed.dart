@@ -14,12 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FilterConfig {
 
-// Суффиксы (взаимоисключающие)
- bool get isDto; bool get isEntity;// Сериализация
- bool get useSerialization; bool get useFreezed;// Базовые опции
- bool get imports; bool get makeFieldsFinal;// Вспомогательные методы (только для ручной сериализации)
- bool get generateToString; bool get generateCopyWith; bool get generateEquality;// Документация
- bool get generateDocumentation;
+ bool get isDto; bool get isEntity; bool get useSerialization; bool get useFreezed; bool get imports; bool get makeFieldsFinal; bool get generateToString; bool get generateCopyWith; bool get generateEquality; bool get generateDocumentation;
 /// Create a copy of FilterConfig
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -217,20 +212,15 @@ class _FilterConfig implements FilterConfig {
   const _FilterConfig({this.isDto = false, this.isEntity = false, this.useSerialization = true, this.useFreezed = false, this.imports = true, this.makeFieldsFinal = true, this.generateToString = false, this.generateCopyWith = false, this.generateEquality = false, this.generateDocumentation = false});
   
 
-// Суффиксы (взаимоисключающие)
 @override@JsonKey() final  bool isDto;
 @override@JsonKey() final  bool isEntity;
-// Сериализация
 @override@JsonKey() final  bool useSerialization;
 @override@JsonKey() final  bool useFreezed;
-// Базовые опции
 @override@JsonKey() final  bool imports;
 @override@JsonKey() final  bool makeFieldsFinal;
-// Вспомогательные методы (только для ручной сериализации)
 @override@JsonKey() final  bool generateToString;
 @override@JsonKey() final  bool generateCopyWith;
 @override@JsonKey() final  bool generateEquality;
-// Документация
 @override@JsonKey() final  bool generateDocumentation;
 
 /// Create a copy of FilterConfig

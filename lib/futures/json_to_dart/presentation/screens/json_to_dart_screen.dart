@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:json_to_dart/futures/json_to_dart/domain/enities/filter_config.dart';
+import 'package:json_to_dart/futures/json_to_dart/presentation/bloc/json_to_dart_bloc.dart';
 import 'package:json_to_dart/futures/json_to_dart/presentation/components/app_box.dart';
 import 'package:json_to_dart/futures/json_to_dart/presentation/components/filter_dialog.dart';
 import 'package:json_to_dart/futures/json_to_dart/presentation/components/git_button.dart';
 import 'package:json_to_dart/futures/json_to_dart/presentation/components/panels/json_panel.dart';
 import 'package:json_to_dart/futures/json_to_dart/presentation/components/panels/models_panel.dart';
 import 'package:json_to_dart/futures/json_to_dart/presentation/components/resizable_panels.dart';
-import 'package:json_to_dart/futures/json_to_dart/presentation/providers/json_to_dart_provider.dart';
-import 'package:provider/provider.dart';
 
 class JsonToDartScreen extends StatelessWidget {
   const JsonToDartScreen({super.key});
@@ -20,7 +20,7 @@ class JsonToDartScreen extends StatelessWidget {
         return FilterDialog(
           initialFilters: currentFilters,
           onApply: (newFilters) {
-            context.read<JsonToDartProvider>().updateFilters(newFilters);
+            context.read<JsonToDartBloc>().add(JsonToDartEvent.updateFilters(filters: newFilters));
             Navigator.of(dialogContext).pop();
           },
         );
@@ -63,13 +63,16 @@ class JsonToDartScreen extends StatelessWidget {
           Panel(backgroundColor: Color.fromARGB(255, 18, 18, 18), child: ModelsPanel()),
         ],
       ),
-      floatingActionButton: Consumer<JsonToDartProvider>(
-        builder: (context, provider, _) {
-          return FloatingActionButton(
+      floatingActionButton: BlocBuilder<JsonToDartBloc, JsonToDartState>(
+        builder: (context, state) => switch (state) {
+          Loading(:final filters) ||
+          Success(:final filters) ||
+          Failure(:final filters) => FloatingActionButton(
             backgroundColor: const Color.fromARGB(255, 30, 144, 255),
             child: const Icon(Icons.filter_list_rounded, color: Colors.white),
-            onPressed: () => _showFilterDialog(context, provider.filters),
-          );
+            onPressed: () => _showFilterDialog(context, filters),
+          ),
+          _ => const SizedBox.shrink(),
         },
       ),
     );

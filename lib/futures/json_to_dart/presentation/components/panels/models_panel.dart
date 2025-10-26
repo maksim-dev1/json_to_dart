@@ -1,8 +1,7 @@
-// lib/futures/json_to_dart/presentation/components/panels/models_panel.dart
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:json_to_dart/futures/json_to_dart/presentation/providers/json_to_dart_provider.dart';
+import 'package:json_to_dart/futures/json_to_dart/presentation/bloc/json_to_dart_bloc.dart';
 import 'package:json_to_dart/theme/app_theme.dart';
 import 'package:re_editor/re_editor.dart';
 import 'package:re_highlight/languages/dart.dart';
@@ -12,20 +11,12 @@ class ModelsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<JsonToDartProvider>(
-      builder: (context, provider, _) {
-        if (provider.isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (provider.errorMessage != null) {
-          return _ErrorState(error: provider.errorMessage!);
-        }
-
-        return KeyedSubtree(
-          key: ValueKey(provider.generatedCode),
-          child: _CodeEditorWidget(code: provider.generatedCode),
-        );
+    return BlocBuilder<JsonToDartBloc, JsonToDartState>(
+      builder: (context, state) => switch (state) {
+        Loading() => const Center(child: CircularProgressIndicator()),
+        Success() => _CodeEditorWidget(code: state.generatedCode),
+        Failure(:final errorMessage) => _ErrorState(error: errorMessage),
+        _ => const SizedBox.shrink(),
       },
     );
   }
@@ -49,6 +40,14 @@ class _CodeEditorWidgetState extends State<_CodeEditorWidget> {
   }
 
   @override
+  void didUpdateWidget(covariant _CodeEditorWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.code != widget.code) {
+      _controller.text = widget.code;
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -68,25 +67,6 @@ class _CodeEditorWidgetState extends State<_CodeEditorWidget> {
           theme: codeEditorStyle,
         ),
       ),
-      indicatorBuilder: (context, editingController, chunkController, notifier) {
-        return Row(
-          children: [
-            DefaultCodeLineNumber(
-              textStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: Colors.grey,
-                fontFamily: GoogleFonts.firaCode().fontFamily,
-              ),
-              focusedTextStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Colors.grey,
-                fontFamily: GoogleFonts.firaCode().fontFamily,
-              ),
-              minNumberCount: 4,
-              controller: editingController,
-              notifier: notifier,
-            ),
-          ],
-        );
-      },
     );
   }
 }
@@ -102,8 +82,8 @@ class _ErrorState extends StatelessWidget {
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.red.withOpacity(0.1),
-          border: Border.all(color: Colors.red.withOpacity(0.3)),
+          color: Colors.red.withValues(alpha: 0.1),
+          border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -118,7 +98,7 @@ class _ErrorState extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               error,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
               textAlign: TextAlign.center,
             ),
           ],

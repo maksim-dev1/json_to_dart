@@ -1,4 +1,3 @@
-// lib/bootstrap.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:json_to_dart/app.dart';
