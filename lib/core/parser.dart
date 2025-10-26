@@ -1,5 +1,3 @@
-// lib/core/parser/json_to_dart_service.dart
-
 class JsonParserService {
   String parse({
     required String rootClassName,
@@ -79,16 +77,16 @@ class _Generator {
 
     if (imports) {
       buffer.writeln("import 'dart:convert';");
-      
+
       if (useFreezed) {
         buffer.writeln("import 'package:freezed_annotation/freezed_annotation.dart';");
         buffer.writeln("part '${_toSnakeCase(rootName)}.freezed.dart';");
-        
+
         if (useSerialization) {
           buffer.writeln("part '${_toSnakeCase(rootName)}.g.dart';");
         }
       }
-      
+
       buffer.writeln();
     }
 
@@ -166,7 +164,8 @@ class _Generator {
     }
 
     if (value is int) return _FieldSpec(name: fieldName, dartType: 'int', originalKey: rawKey);
-    if (value is double) return _FieldSpec(name: fieldName, dartType: 'double', originalKey: rawKey);
+    if (value is double)
+      return _FieldSpec(name: fieldName, dartType: 'double', originalKey: rawKey);
     if (value is bool) return _FieldSpec(name: fieldName, dartType: 'bool', originalKey: rawKey);
     if (value is String) {
       final maybeDate = DateTime.tryParse(value);
@@ -224,9 +223,9 @@ class _Generator {
     return f.originalKey != f.name;
   }
 
-String _generateClassDocumentation(_ClassSpec spec) {
+  String _generateClassDocumentation(_ClassSpec spec) {
     if (!generateDocumentation) return '';
-    
+
     final buf = StringBuffer();
     buf.writeln('/// TODO: Purpose of this class - what is ${spec.name} for?');
     buf.writeln('///');
@@ -234,7 +233,7 @@ String _generateClassDocumentation(_ClassSpec spec) {
     buf.writeln('///');
     buf.writeln('/// Example usage:');
     buf.writeln('/// ```');
-    
+
     // Автоматическая генерация примера на основе полей
     if (spec.fields.isNotEmpty) {
       if (useSerialization) {
@@ -262,29 +261,29 @@ String _generateClassDocumentation(_ClassSpec spec) {
     } else {
       buf.writeln('/// final instance = ${spec.name}();');
     }
-    
+
     buf.writeln('/// ```');
     return buf.toString();
   }
 
   String _generateFieldDocumentation(_FieldSpec field) {
     if (!generateDocumentation) return '';
-    
+
     final buf = StringBuffer();
     buf.writeln('  /// TODO: What is this parameter - describe ${field.name}.');
     buf.writeln('  ///');
     buf.writeln('  /// TODO: Parameter description - add details, constraints, or special notes.');
-    
+
     return buf.toString();
   }
 
- String _generateConstructorDocumentation(_ClassSpec spec) {
+  String _generateConstructorDocumentation(_ClassSpec spec) {
     if (!generateDocumentation) return '';
-    
+
     final buf = StringBuffer();
     buf.writeln('  /// Creates a new instance of [${spec.name}] with given parameters.');
     buf.writeln('  ///');
-    
+
     if (spec.fields.isNotEmpty) {
       buf.writeln('  /// Parameters:');
       for (final field in spec.fields.values) {
@@ -293,7 +292,7 @@ String _generateClassDocumentation(_ClassSpec spec) {
       buf.writeln('  ///');
       buf.writeln('  /// Example:');
       buf.writeln('  /// ```');
-      
+
       // Автоматическая генерация примера конструктора
       buf.writeln('  /// final instance = ${spec.name}(');
       for (final f in spec.fields.values) {
@@ -301,10 +300,10 @@ String _generateClassDocumentation(_ClassSpec spec) {
         buf.writeln('  ///   ${f.name}: $exampleValue,');
       }
       buf.writeln('  /// );');
-      
+
       buf.writeln('  /// ```');
     }
-    
+
     return buf.toString();
   }
 
@@ -326,7 +325,10 @@ String _generateClassDocumentation(_ClassSpec spec) {
         // Для кастомных типов
         if (field.dartType.startsWith('List<')) {
           final innerType = field.dartType.substring(5, field.dartType.length - 1);
-          if (innerType == 'int' || innerType == 'double' || innerType == 'bool' || innerType == 'String') {
+          if (innerType == 'int' ||
+              innerType == 'double' ||
+              innerType == 'bool' ||
+              innerType == 'String') {
             return '[]';
           }
           return '[]';
@@ -339,16 +341,15 @@ String _generateClassDocumentation(_ClassSpec spec) {
     }
   }
 
-
   String _renderClass(_ClassSpec spec) {
     if (useFreezed) {
       return _renderFreezedClass(spec);
     }
-    
+
     if (useSerialization) {
       return _renderManualClass(spec);
     }
-    
+
     return _renderPlainClass(spec);
   }
 
@@ -365,11 +366,11 @@ String _generateClassDocumentation(_ClassSpec spec) {
       if (generateDocumentation) {
         buf.write(_generateFieldDocumentation(f));
       }
-      
+
       final finalMark = makeFieldsFinal ? 'final ' : '';
       final type = f.dartType + (f.nullable && !_isNullableType(f.dartType) ? '?' : '');
       buf.writeln('  $finalMark$type ${f.name};');
-      
+
       if (generateDocumentation) {
         buf.writeln();
       }
@@ -382,7 +383,7 @@ String _generateClassDocumentation(_ClassSpec spec) {
     if (generateDocumentation) {
       buf.write(_generateConstructorDocumentation(spec));
     }
-    
+
     buf.writeln('  ${spec.name}({');
     for (final f in spec.fields.values) {
       final requiredMark = f.nullable ? '' : 'required ';
@@ -477,16 +478,16 @@ String _generateClassDocumentation(_ClassSpec spec) {
       if (generateDocumentation) {
         buf.write(_generateFieldDocumentation(f));
       }
-      
+
       final finalMark = makeFieldsFinal ? 'final ' : '';
       final type = f.dartType + (f.nullable && !_isNullableType(f.dartType) ? '?' : '');
-      
+
       if (_needsJsonKey(f)) {
         buf.writeln("  @JsonKey(name: '${f.originalKey}')");
       }
-      
+
       buf.writeln('  $finalMark$type ${f.name};');
-      
+
       if (generateDocumentation) {
         buf.writeln();
       }
@@ -499,7 +500,7 @@ String _generateClassDocumentation(_ClassSpec spec) {
     if (generateDocumentation) {
       buf.write(_generateConstructorDocumentation(spec));
     }
-    
+
     buf.writeln('  ${spec.name}({');
     for (final f in spec.fields.values) {
       final requiredMark = f.nullable ? '' : 'required ';
@@ -538,7 +539,7 @@ String _generateClassDocumentation(_ClassSpec spec) {
     buf.writeln('    return {');
     for (final f in spec.fields.values) {
       final key = f.originalKey ?? f.name;
-      buf.writeln("      '${key}': ${_toJsonExpression(f)},");
+      buf.writeln("      '$key': ${_toJsonExpression(f)},");
     }
     buf.writeln('    };');
     buf.writeln('  }');
@@ -626,25 +627,25 @@ String _generateClassDocumentation(_ClassSpec spec) {
 
     buf.writeln('@freezed');
     buf.writeln('class ${spec.name} with _\$${spec.name} {');
-    
+
     if (generateDocumentation) {
       buf.write(_generateConstructorDocumentation(spec));
     }
-    
+
     buf.writeln('  const factory ${spec.name}({');
-    
+
     for (final f in spec.fields.values) {
       final type = f.dartType + (f.nullable && !_isNullableType(f.dartType) ? '?' : '');
       final requiredMark = f.nullable ? '' : 'required ';
-      
+
       if (useSerialization && _needsJsonKey(f)) {
         buf.writeln("    @JsonKey(name: '${f.originalKey}')");
       }
-      
+
       buf.writeln('    $requiredMark$type ${f.name},');
     }
     buf.writeln('  }) = _${spec.name};');
-    
+
     if (useSerialization) {
       buf.writeln();
       if (generateDocumentation) {
@@ -659,7 +660,7 @@ String _generateClassDocumentation(_ClassSpec spec) {
         '  factory ${spec.name}.fromJson(Map<String, dynamic> json) => _\$${spec.name}FromJson(json);',
       );
     }
-    
+
     buf.writeln('}');
     return buf.toString();
   }
@@ -727,13 +728,15 @@ String _generateClassDocumentation(_ClassSpec spec) {
 
   String _toSnakeCase(String input) {
     final pascal = _toPascalCase(input);
-    final buffer = StringBuffer();
-    for (var i = 0; i < pascal.length; i++) {
-      final ch = pascal[i];
-      if (ch.toUpperCase() == ch && i > 0) buffer.write('_');
-      buffer.write(ch.toLowerCase());
-    }
-    return buffer.toString();
+
+    return pascal
+        .replaceAllMapped(RegExp('([a-z0-9])([A-Z])'), (match) => '${match[1]}_${match[2]}')
+        .replaceAllMapped(RegExp('([A-Z]+)([A-Z][a-z])'), (match) {
+          final acronym = match[1]!;
+          final nextWord = match[2]!;
+          return '${acronym.substring(0, acronym.length - 1)}_$nextWord';
+        })
+        .toLowerCase();
   }
 
   String _sanitizeFieldName(String key) {

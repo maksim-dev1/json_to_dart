@@ -46,6 +46,8 @@ dependencies:
   re_editor: ^0.7.0
   re_highlight: ^0.0.3
   provider: ^6.1.5+1
+  bloc: ^9.1.0
+  flutter_bloc: ^9.1.1
   
 
 dev_dependencies:

@@ -1,9 +1,8 @@
-// lib/futures/json_to_dart/presentation/components/panels/json_panel.dart
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:json_to_dart/futures/json_to_dart/presentation/providers/json_to_dart_provider.dart';
+import 'package:json_to_dart/futures/json_to_dart/presentation/bloc/json_to_dart_bloc.dart';
 import 'package:json_to_dart/theme/app_theme.dart';
+import 'package:provider/provider.dart';
 import 'package:re_editor/re_editor.dart';
 import 'package:re_highlight/languages/json.dart';
 
@@ -67,12 +66,10 @@ class _JsonPanelState extends State<JsonPanel> {
       sperator: const SizedBox(
         width: 1,
         height: double.infinity,
-        child: DecoratedBox(
-          decoration: BoxDecoration(color: Color.fromARGB(255, 30, 144, 255)),
-        ),
+        child: DecoratedBox(decoration: BoxDecoration(color: Color.fromARGB(255, 30, 144, 255))),
       ),
       onChanged: (value) {
-        context.read<JsonToDartProvider>().parseJson(value);
+        context.read<JsonToDartBloc>().add(JsonToDartEvent.parseJson(json: value));
       },
     );
   }
