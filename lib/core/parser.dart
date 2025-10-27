@@ -164,8 +164,9 @@ class _Generator {
     }
 
     if (value is int) return _FieldSpec(name: fieldName, dartType: 'int', originalKey: rawKey);
-    if (value is double)
+    if (value is double) {
       return _FieldSpec(name: fieldName, dartType: 'double', originalKey: rawKey);
+    }
     if (value is bool) return _FieldSpec(name: fieldName, dartType: 'bool', originalKey: rawKey);
     if (value is String) {
       final maybeDate = DateTime.tryParse(value);
@@ -234,10 +235,8 @@ class _Generator {
     buf.writeln('/// Example usage:');
     buf.writeln('/// ```');
 
-    // Автоматическая генерация примера на основе полей
     if (spec.fields.isNotEmpty) {
       if (useSerialization) {
-        // Пример с JSON
         buf.writeln('/// final json = {');
         for (final f in spec.fields.values) {
           final key = f.originalKey ?? f.name;
@@ -250,7 +249,6 @@ class _Generator {
           buf.writeln('/// print(instance.toJson());');
         }
       } else {
-        // Пример с конструктором
         buf.writeln('/// final instance = ${spec.name}(');
         for (final f in spec.fields.values) {
           final exampleValue = _getExampleValue(f);
@@ -293,7 +291,6 @@ class _Generator {
       buf.writeln('  /// Example:');
       buf.writeln('  /// ```');
 
-      // Автоматическая генерация примера конструктора
       buf.writeln('  /// final instance = ${spec.name}(');
       for (final f in spec.fields.values) {
         final exampleValue = _getExampleValue(f);
@@ -318,11 +315,10 @@ class _Generator {
       case 'String':
         return "'example'";
       case 'DateTime':
-        return "DateTime.now()";
+        return 'DateTime.now()';
       case 'dynamic':
         return 'null';
       default:
-        // Для кастомных типов
         if (field.dartType.startsWith('List<')) {
           final innerType = field.dartType.substring(5, field.dartType.length - 1);
           if (innerType == 'int' ||
@@ -333,7 +329,6 @@ class _Generator {
           }
           return '[]';
         }
-        // Для пользовательских классов
         if (field.isCustomClass) {
           return '${field.dartType}()';
         }
