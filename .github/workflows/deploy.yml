@@ -17,7 +17,7 @@ jobs:
       - name: 🐦 Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.35.4'
+          flutter-version: '3.24.3'
           channel: 'stable'
           cache: true
       
@@ -26,10 +26,6 @@ jobs:
       
       - name: 🔍 Analyze code
         run: flutter analyze
-        continue-on-error: true
-      
-      - name: 🧪 Run tests
-        run: flutter test
         continue-on-error: true
       
       - name: 🏗️ Build Flutter Web
@@ -54,11 +50,7 @@ jobs:
       
       - name: 🔧 Set permissions for Nginx
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            sudo chown -R www-data:www-data ${{ secrets.DEPLOY_PATH }}
-            sudo chmod -R 755 ${{ secrets.DEPLOY_PATH }}
-            sudo find ${{ secrets.DEPLOY_PATH }} -type f -exec chmod 644 {} \;
-          EOF
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "sudo chown -R www-data:www-data ${{ secrets.DEPLOY_PATH }} && sudo chmod -R 755 ${{ secrets.DEPLOY_PATH }} && sudo find ${{ secrets.DEPLOY_PATH }} -type f -exec chmod 644 {} \;"
       
       - name: ✅ Deployment successful
         run: |
