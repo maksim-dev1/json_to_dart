@@ -41,12 +41,13 @@ jobs:
       
       - name: 📤 Deploy with rsync
         run: |
-            ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "sudo rm -rf ${{ secrets.DEPLOY_PATH }}/*"
-            rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" \
-            --delete \
-            --exclude='.git*' \
-            ./build/web/ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "sudo rm -rf ${{ secrets.DEPLOY_PATH }}/* && sudo chown -R ${{ secrets.SSH_USER }}:www-data ${{ secrets.DEPLOY_PATH }} && sudo chmod -R 775 ${{ secrets.DEPLOY_PATH }}"
+          rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" \
+          --delete \
+          --exclude='.git*' \
+          ./build/web/ \
+          ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/
+
 
       
       - name: 🔧 Set permissions for Nginx
