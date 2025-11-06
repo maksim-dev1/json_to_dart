@@ -1,62 +1,54 @@
-name: Deploy Flutter Web to Raspberry Pi
+name: Deploy jsontodart
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     
     steps:
-      - name: 📥 Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: 🐦 Setup Flutter
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
-          cache: true
+          flutter-version: 'latest'
       
-      - name: 📦 Get dependencies
-        run: flutter pub get
-      
-      - name: 🔍 Analyze code
-        run: flutter analyze
-        continue-on-error: true
-      
-      - name: 🏗️ Build Flutter Web
-        run: flutter build web --release --base-href /
-      
-      - name: 🔑 Install SSH Key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: 'placeholder-will-be-updated'
-      
-      - name: 🔐 Adding Known Hosts
-        run: ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-      
-      - name: 📤 Deploy with rsync
+      - name: Get dependencies
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "sudo rm -rf ${{ secrets.DEPLOY_PATH }}/* && sudo chown -R ${{ secrets.SSH_USER }}:www-data ${{ secrets.DEPLOY_PATH }} && sudo chmod -R 775 ${{ secrets.DEPLOY_PATH }}"
-          rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" \
-          --delete \
-          --exclude='.git*' \
-          ./build/web/ \
-          ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/
-
-
+          flutter clean
+          flutter pub get
       
-      - name: 🔧 Set permissions for Nginx
+      - name: Build web
+        run: flutter build web --release
+      
+      - name: Setup SSH
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "sudo chown -R www-data:www-data ${{ secrets.DEPLOY_PATH }} && sudo chmod -R 755 ${{ secrets.DEPLOY_PATH }} && sudo find ${{ secrets.DEPLOY_PATH }} -type f -exec chmod 644 {} \;"
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+      
+      - name: Deploy to server
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            build/web/ \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/var/www/jsontodart/html/
+      
+      - name: Reload Nginx
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            'systemctl reload nginx'
       
       - name: ✅ Deployment successful
-        run: |
-          echo "🎉 Deployment completed successfully!"
-          echo "🌐 Site: https://jsontodart.progger.pro"
-          echo "📊 Deployed files:"
-          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "ls -lh ${{ secrets.DEPLOY_PATH }}"
+        run: echo "Deployed to https://jsontodart.progger.pro"
