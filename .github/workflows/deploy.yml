@@ -2,26 +2,45 @@ name: Deploy jsontodart
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
+    tags:
+      - 'v*'
     branches:
       - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Деплоится ТОЛЬКО если:
+    # 1. Tag начинается с v* ИЛИ
+    # 2. Push на main ветку
+    if: |
+      startsWith(github.ref, 'refs/tags/v') || 
+      (github.ref == 'refs/heads/main' && github.event_name == 'push')
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      
+      - name: Get version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+            echo "VERSION=$VERSION" >> $GITHUB_ENV
+            echo "📦 Tag detected: v$VERSION"
+          else
+            # Для push на main без tag - используем timestamp
+            TIMESTAMP=$(date +%s)
+            COMMIT_SHORT=$(git rev-parse --short HEAD)
+            VERSION="nightly-$COMMIT_SHORT"
+            echo "VERSION=$VERSION" >> $GITHUB_ENV
+            echo "🌙 Nightly build: $VERSION"
+          fi
       
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.35.7'
           channel: 'stable'
-
       
       - name: Get dependencies
         run: |
@@ -53,4 +72,9 @@ jobs:
             'systemctl reload nginx'
       
       - name: ✅ Deployment successful
-        run: echo "Deployed to https://jsontodart.progger.pro"
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "✅ Production deployed: jsontodart v${{ env.VERSION }}"
+          else
+            echo "🌙 Nightly deployed: jsontodart ${{ env.VERSION }}"
+          fi
