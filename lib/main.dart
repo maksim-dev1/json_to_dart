@@ -4,7 +4,7 @@ import 'package:talker_flutter/talker_flutter.dart';
 
 final talker = TalkerFlutter.init();
 
-Future<void> main() async {  
+Future<void> main() async {
   await runZonedGuarded(
     () async {
       talker.info('bootstrap launch');

@@ -5,14 +5,14 @@ final appTheme = ThemeData(
   useMaterial3: true,
   fontFamily: GoogleFonts.roboto().fontFamily,
 
-  scaffoldBackgroundColor: Color.fromARGB(255, 2, 2, 2),
+  scaffoldBackgroundColor: const Color.fromARGB(255, 2, 2, 2),
   // switchTheme: SwitchThemeData(
 
   //   thumbColor: WidgetStatePropertyAll(Colors.white),
   //   trackColor: WidgetStatePropertyAll(Colors.green),
   //   overlayColor: WidgetStatePropertyAll(Colors.yellow),
   //   trackOutlineColor: WidgetStatePropertyAll(Colors.purple),
-    
+
   // ),
 );
 

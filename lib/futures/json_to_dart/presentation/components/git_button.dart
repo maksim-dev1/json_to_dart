@@ -9,9 +9,7 @@ class GitButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ButtonStyle(
-        padding: const WidgetStatePropertyAll(
-          EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        ),
+        padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 8, vertical: 6)),
         backgroundColor: const WidgetStatePropertyAll(Colors.black),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -24,10 +22,9 @@ class GitButton extends StatelessWidget {
           const WBox(8),
           Text(
             'Open GitHub',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w900,
-              color: Colors.white,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900, color: Colors.white),
           ),
         ],
       ),
