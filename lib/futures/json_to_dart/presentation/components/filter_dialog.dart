@@ -156,11 +156,11 @@ class FilterDialogState extends State<FilterDialog> {
               ),
 
               // Documentation
-              _CustomSwitchListTile(
-                title: 'Generate Documentation',
-                value: _generateDocumentation,
-                onChanged: (value) => setState(() => _generateDocumentation = value),
-              ),
+              // _CustomSwitchListTile(
+              //   title: 'Generate Documentation',
+              //   value: _generateDocumentation,
+              //   onChanged: (value) => setState(() => _generateDocumentation = value),
+              // ),
             ],
           ),
         ),
@@ -200,7 +200,7 @@ class FilterDialogState extends State<FilterDialog> {
 class _CustomSwitchListTile extends StatelessWidget {
   final String title;
   final bool value;
-  final Function(bool value) onChanged;
+  final ValueChanged<bool> onChanged;
   const _CustomSwitchListTile({required this.title, required this.value, required this.onChanged});
 
   @override
@@ -209,7 +209,7 @@ class _CustomSwitchListTile extends StatelessWidget {
       title: Text(title, style: const TextStyle(color: Colors.white)),
       value: value,
       onChanged: onChanged,
-      trackColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
+      trackColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
         if (states.contains(WidgetState.selected)) {
           return const Color.fromARGB(255, 30, 144, 255);
         }

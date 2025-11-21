@@ -24,6 +24,27 @@ class JsonToDartBloc extends Bloc<JsonToDartEvent, JsonToDartState> {
     );
   }
 
+  void _log(String message) {
+    if (kDebugMode) print(message);
+  }
+
+  String _generateCode(String jsonString, FilterConfig filters) {
+    return _parserService.parse(
+      rootClassName: 'Root',
+      parsedJson: jsonDecode(jsonString),
+      useSerialization: filters.useSerialization,
+      useFreezed: filters.useFreezed,
+      isDto: filters.isDto,
+      isEntity: filters.isEntity,
+      imports: filters.imports,
+      generateToString: filters.generateToString,
+      generateCopyWith: filters.generateCopyWith,
+      generateEquality: filters.generateEquality,
+      makeFieldsFinal: filters.makeFieldsFinal,
+      generateDocumentation: filters.generateDocumentation,
+    );
+  }
+
   Future<void> _parseJson({
     required Emitter<JsonToDartState> emit,
     required CodeLineEditingValue json,
@@ -37,41 +58,16 @@ class JsonToDartBloc extends Bloc<JsonToDartEvent, JsonToDartState> {
       final trimmed = raw.trim();
 
       if (trimmed.isEmpty) {
-        if (kDebugMode) {
-          print('📭 JSON пустой');
-        }
+        _log('📭 JSON is empty');
         emit(JsonToDartState.success(generatedCode: '', filters: currentFilters, lastJson: json));
         return;
       }
 
-      final parsed = jsonDecode(trimmed);
+      _log('⚙️ Generating code with config: ${currentFilters.toString().replaceAll('\n', ' ')}');
 
-      if (kDebugMode) {
-        print('⚙️ Генерация кода с параметрами:');
-        print('  useSerialization: ${currentFilters.useSerialization}');
-        print('  useFreezed: ${currentFilters.useFreezed}');
-        print('  generateDocumentation: ${currentFilters.generateDocumentation}');
-      }
+      final generatedCode = _generateCode(trimmed, currentFilters);
 
-      final generatedCode = _parserService.parse(
-        rootClassName: 'Root',
-        parsedJson: parsed,
-        useSerialization: currentFilters.useSerialization,
-        useFreezed: currentFilters.useFreezed,
-        isDto: currentFilters.isDto,
-        isEntity: currentFilters.isEntity,
-        imports: currentFilters.imports,
-        generateToString: currentFilters.generateToString,
-        generateCopyWith: currentFilters.generateCopyWith,
-        generateEquality: currentFilters.generateEquality,
-        makeFieldsFinal: currentFilters.makeFieldsFinal,
-        generateDocumentation: currentFilters.generateDocumentation,
-      );
-
-      if (kDebugMode) {
-        print('✅ Код сгенерирован');
-        print('  Длина: ${generatedCode.length} символов');
-      }
+      _log('✅ Code generated (${generatedCode.length} chars)');
 
       emit(
         JsonToDartState.success(
@@ -81,10 +77,7 @@ class JsonToDartBloc extends Bloc<JsonToDartEvent, JsonToDartState> {
         ),
       );
     } on Object catch (e, stackTrace) {
-      if (kDebugMode) {
-        print('❌ Ошибка генерации: $e');
-        print('Stack trace: $stackTrace');
-      }
+      _log('❌ Generation error: $e\n$stackTrace');
 
       emit(
         JsonToDartState.failure(
@@ -100,80 +93,50 @@ class JsonToDartBloc extends Bloc<JsonToDartEvent, JsonToDartState> {
     required Emitter<JsonToDartState> emit,
     required FilterConfig filters,
   }) async {
-    
-    if (kDebugMode) {
-      print('🔄 Обновление фильтров:');
-      print(
-        '  useSerialization: ${state.filters?.useSerialization} -> ${filters.useSerialization}',
-      );
-      print('  useFreezed: ${state.filters?.useFreezed} -> ${filters.useFreezed}');
-      print(
-        '  generateDocumentation: ${state.filters?.generateDocumentation} -> ${filters.generateDocumentation}',
-      );
-    }
-
     final currentState = state;
 
-    if (currentState is Success) {
-      if (kDebugMode) {
-        print('  📝 Перегенерация кода с новыми фильтрами');
-      }
-
-      emit(JsonToDartState.loading(filters: filters));
-
-      try {
-        final raw = currentState.lastJson.codeLines.asString(TextLineBreak.lf);
-        final trimmed = raw.trim();
-
-        if (trimmed.isEmpty) {
-          emit(
-            JsonToDartState.success(
-              generatedCode: '',
-              filters: filters,
-              lastJson: currentState.lastJson,
-            ),
-          );
-          return;
-        }
-
-        final parsed = jsonDecode(trimmed);
-
-        final generatedCode = _parserService.parse(
-          rootClassName: 'Root',
-          parsedJson: parsed,
-          useSerialization: filters.useSerialization,
-          useFreezed: filters.useFreezed,
-          isDto: filters.isDto,
-          isEntity: filters.isEntity,
-          imports: filters.imports,
-          generateToString: filters.generateToString,
-          generateCopyWith: filters.generateCopyWith,
-          generateEquality: filters.generateEquality,
-          makeFieldsFinal: filters.makeFieldsFinal,
-          generateDocumentation: filters.generateDocumentation,
-        );
-
-        emit(
-          JsonToDartState.success(
-            generatedCode: generatedCode,
-            filters: filters,
-            lastJson: currentState.lastJson,
-          ),
-        );
-      } on Object catch (e) {
-        emit(JsonToDartState.failure(errorMessage: e.toString(), filters: filters));
-        rethrow;
-      }
-    } else {
-      if (kDebugMode) {
-        print('  ⚠️ Нет сохраненного JSON, просто обновляем фильтры');
-      }
-
+    if (currentState is! Success) {
+      _log('⚠️ No saved JSON, updating filters only');
       if (currentState is Failure) {
         emit(JsonToDartState.failure(errorMessage: currentState.errorMessage, filters: filters));
       } else {
         emit(const JsonToDartState.initial());
       }
+      return;
+    }
+
+    _log('🔄 Updating filters, regenerating code');
+
+    emit(JsonToDartState.loading(filters: filters));
+
+    try {
+      final raw = currentState.lastJson.codeLines.asString(TextLineBreak.lf);
+      final trimmed = raw.trim();
+
+      if (trimmed.isEmpty) {
+        emit(
+          JsonToDartState.success(
+            generatedCode: '',
+            filters: filters,
+            lastJson: currentState.lastJson,
+          ),
+        );
+        return;
+      }
+
+      final generatedCode = _generateCode(trimmed, filters);
+
+      emit(
+        JsonToDartState.success(
+          generatedCode: generatedCode,
+          filters: filters,
+          lastJson: currentState.lastJson,
+        ),
+      );
+    } on Object catch (e) {
+      _log('❌ Filter update error: $e');
+      emit(JsonToDartState.failure(errorMessage: e.toString(), filters: filters));
+      rethrow;
     }
   }
 }
