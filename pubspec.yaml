@@ -39,7 +39,7 @@ dependencies:
   # flutter_bloc: ^9.1.1
   # talker_bloc_logger: ^4.9.3
   talker_dio_logger: ^4.9.3
-  google_fonts: ^6.2.1
+  google_fonts: ^8.0.2
   flutter_svg: ^2.2.0
   freezed: ^3.2.0
   freezed_annotation: ^3.1.0
