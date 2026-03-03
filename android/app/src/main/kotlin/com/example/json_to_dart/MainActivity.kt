@@ -1,4 +1,4 @@
-package com.example.json_to_dart
+package com.pixelio.json_to_dart
 
 import io.flutter.embedding.android.FlutterActivity
 

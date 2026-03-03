@@ -48,6 +48,10 @@ dependencies:
   provider: ^6.1.5+1
   bloc: ^9.1.0
   flutter_bloc: ^9.1.1
+  version_manager_checker:
+    git:
+      url: https://github.com/maksim-dev1/version_manager_checker.git
+      ref: main
   
 
 dev_dependencies:
